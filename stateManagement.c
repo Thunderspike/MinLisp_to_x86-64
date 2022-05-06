@@ -1,10 +1,20 @@
-#include "minLisp.h"
+#include "minlisp.h"
 
 int scopeIdCounter = 0;
 int nodeCounter = 0;
 Scope* currScope_p = NULL;
 GlobalFuncs* globalFuncs_p = NULL;
 GlobalArrays* globalArrs_p = NULL;
+
+char* genpurpRegName[GEN_PUR_AVAIL_REGS] = {
+    "\%rbx", "\%rbp", "\%r10", "\%r11", "\%r12", "\%r13", "\%r14", "\%r15"
+};
+char* funcparamRegName[FUNC_PAR_AVAIL_REGS] = {
+    "\%rdi", "\%rsi", "\%rdx", "\%rcx", "\%r8", "\%r9"
+};
+int funcRegs[FUNC_PAR_AVAIL_REGS] = { 1, 1, 1, 1, 1, 1 };
+
+FILE* logsFile_p = NULL;
 
 void initGlobalState() {
     if(!currScope_p && !globalFuncs_p) {
@@ -24,7 +34,6 @@ void createScope(char* name) {
     parent_p = currScope_p;
     currScope_p = _newScope();
     currScope_p->enclosingScope_p = parent_p;
-    currScope_p->isTopScope = 0;
     currScope_p->name = (char*) malloc(sizeof(STR_SIZE));
     if(name)
         currScope_p->name = name;
@@ -38,9 +47,12 @@ void createScope(char* name) {
     currScope_p->id = scopeIdCounter++;
 }
 
-Scope* _newScope() {
+void createFuncScope(char* name) {
+    createScope(name);
+    currScope_p->isFunction = 1;
+}
 
-    // printf("\n\n--- creating new scope ---");
+Scope* _newScope() {
 
     Scope* newScope_p = (Scope *) malloc(sizeof(Scope));
     newScope_p->count = 0;
@@ -49,12 +61,12 @@ Scope* _newScope() {
     newScope_p->ids_p = (char **) malloc(HASHMAPCAPACITY * STR_SIZE);
     newScope_p->enclosingScope_p = (Scope *) malloc(sizeof(Scope));
     newScope_p->isTopScope = 0;
+    newScope_p->isFunction = 0;
 
     struct hsearch_data *newHashmap_p = (struct hsearch_data *) calloc(1, sizeof(struct hsearch_data));
 
-    // printf("\nCreating hashmap for new scope");
     if (hcreate_r(HASHMAPCAPACITY, newHashmap_p) == 0) {
-        fprintf(stderr, "\nError: Unable to create hashmap for scope.\n");
+        fprintf(stderr, "Error: Unable to create hashmap for scope.\n");
         exit(0);
     }
     newScope_p->hashmap_p = (struct hsearch_data *) newHashmap_p;
@@ -62,17 +74,23 @@ Scope* _newScope() {
     return newScope_p;
 }
 
-Symbol* createSymbol(char lexeme[255], int type, int val) {
+// ------
+
+Symbol* createSymbol(
+    char lexeme[255], int type, int val_origin, int val_index 
+) {
     Symbol* nSymbol_p =  (Symbol*) malloc(sizeof(Symbol));
     nSymbol_p->lexeme = (char *) malloc(sizeof(STR_SIZE));
     strcpy(nSymbol_p->lexeme, lexeme);
     nSymbol_p->type = type;
-    nSymbol_p->val = val;
+    
+    nSymbol_p->val_origin = val_origin;
+    nSymbol_p->val_index = val_index;
 
     return nSymbol_p;
 }
 
-void add(Scope* scope_p, Symbol* symbol_p) {
+void addSymbol(Scope* scope_p, Symbol* symbol_p) {
    
     ENTRY entry = {
         .key = symbol_p->lexeme,
@@ -80,7 +98,7 @@ void add(Scope* scope_p, Symbol* symbol_p) {
     }, *entry_p;
 
     if (hsearch_r(entry, ENTER, &entry_p, scope_p->hashmap_p) == 0) {
-        fprintf(stderr, "\nError: entry for token failed into scope's hashtable\n");
+        fprintf(stderr, "Error: entry for token failed into scope's hashtable\n");
         exit(0);
     }
     
@@ -90,8 +108,8 @@ void add(Scope* scope_p, Symbol* symbol_p) {
     scope_p->count++;
 }
 
-Symbol* get(Scope* scope_p, char id[255]){
-    // printf("\n\n--- get '%s' ---", id);
+Symbol* getSymbol(Scope* scope_p, char id[255]){
+    // fprintf(logsFile_p, "\n\n--- get '%s' ---", id);
 
     Scope* currScope_p = scope_p;
 
@@ -118,15 +136,14 @@ Symbol* get(Scope* scope_p, char id[255]){
     }
 }
 
-
 void printScopeSymbols(Scope* scope_p) {
-    printf("\n\n--- printing scope symbols ---");
+    fprintf(logsFile_p, "\n\n--- printing scope symbols ---\n\n");
 
     Scope* currScope_p = scope_p;
 
     while (1) {
-        printf("\nScope - name: %s, id: %d ", currScope_p->name, currScope_p->id);
-        printf("\n[ ");
+        fprintf(logsFile_p, "Scope - name: %s, id: %d\n", currScope_p->name, currScope_p->id);
+        fprintf(logsFile_p, "[ ");
         ENTRY entry, *entry_p;
 
         for (int i = 0; i < currScope_p->count; i++) {
@@ -140,23 +157,29 @@ void printScopeSymbols(Scope* scope_p) {
                     currScope_p->hashmap_p
                 ) == 0
             ){
-                fprintf(stderr, "\nError: search for lexeme '%s' in scope's hashtbale failed in print\n", entry.key);
+                fprintf(stderr, "Error: search for lexeme '%s' in scope's hashtbale failed in print\n", entry.key);
                 exit(0);
             }
+            
+            Symbol* sym_p = (Symbol *) (entry_p->data);
 
-            printf(
-                "{ %s: %d }, ",
-                ((Symbol *) (entry_p->data))->lexeme,
-                ((Symbol *) (entry_p->data))->type
+            fprintf(
+                logsFile_p,
+                "{ %s: %d (vo: %d, vi: %d) },  ",
+                sym_p->lexeme,
+                sym_p->type,
+                sym_p->val_origin,
+                sym_p->val_index
             );
         }
-        printf("]\n");
+        fprintf(logsFile_p, "]\n");
 
         if (!currScope_p->isTopScope)
             currScope_p = currScope_p->enclosingScope_p;
         else
             break;
     }
+    fprintf(logsFile_p, "\n\n---\t\t---\n\n");
 }
 
 // ------
@@ -171,7 +194,7 @@ void createGlobalFuncs() {
     struct hsearch_data *newHashmap_p = (struct hsearch_data *) calloc(1, sizeof(struct hsearch_data));
 
      if (hcreate_r(HASHMAPCAPACITY, newHashmap_p) == 0) {
-        fprintf(stderr, "\nError: Unable to create hashmap for functions.\n");
+        fprintf(stderr, "Error: Unable to create hashmap for functions.\n");
         exit(0);
     }
     globalFuncs_p->hashmap_p = (struct hsearch_data *) newHashmap_p;
@@ -185,7 +208,12 @@ FunctionData* createFuncData(char lexeme[255], int paramsCount, int type) {
     funcDataO_p->type = type;
     funcDataO_p->isRecursive = 0;
     funcDataO_p->isUndefined = 0;
-
+    // ^ are for parsing | v are for assembly generation
+    funcDataO_p->stackOffset = 4; // start at 4, leave 0 just in case
+    funcDataO_p->availRegisters = (int*) malloc(sizeof(int) * GEN_PUR_AVAIL_REGS);
+    for(int i = 0; i < GEN_PUR_AVAIL_REGS; i++)
+        funcDataO_p->availRegisters[i] = 1;
+   
     return funcDataO_p;
 }
 
@@ -196,7 +224,7 @@ FunctionData* addFunc(FunctionData* funcDataO_p) {
     }, *entry_p;
 
     if (hsearch_r(entry, ENTER, &entry_p, globalFuncs_p->hashmap_p) == 0) {
-        fprintf(stderr, "\nError: entry for function data object in global function hashmap\n");
+        fprintf(stderr, "Error: entry for function data object in global function hashmap\n");
         exit(0);
     }
     
@@ -227,15 +255,33 @@ FunctionData* getFuncO(char funcName[255]){
 }
 
 void printFuncs() {
-    printf("\n\t --- printing funcs available to global scope --- ");
+    fprintf(logsFile_p, "\n\n--- printing funcs available to global scope ---\n\n");
     FunctionData* func = (FunctionData*) malloc(sizeof(FunctionData));
     for(int i = 0; i < globalFuncs_p->count; i++) {
         func = getFuncO(globalFuncs_p->ids_p[i]);
-        printf("\nfuncName: %s, paramCount: %d, funcReturnType: %d, isRecursive: %d, isUndefined: %d", 
+        fprintf(logsFile_p, "funcName: %s, paramCount: %d, funcReturnType: %d, isRecursive: %d, isUndefined: %d\n", 
             func->lexeme, func->paramsCount, func->type, func->isRecursive, func->isUndefined
         );
     }
-    printf("\n\t --- finished funcs ---\n");
+    fprintf(logsFile_p, "\n\n---\t\t---\n\n");
+}
+
+FunctionData* getClosestEnclosingFunc() {
+    FunctionData* funcDat_p = (FunctionData*) malloc(sizeof(FunctionData));
+    Scope* localCurrScope_p = currScope_p;
+    while (1) {
+       if (!localCurrScope_p->isFunction)
+            localCurrScope_p = localCurrScope_p->enclosingScope_p;
+        else {
+            funcDat_p = getFuncO(localCurrScope_p->name);
+            break;
+        } 
+    }
+    return funcDat_p;
+}
+
+int* availRegisters() {
+    return getClosestEnclosingFunc()->availRegisters;
 }
 
 // ------
@@ -251,7 +297,7 @@ void createGlobalArrays() {
     struct hsearch_data *newHashmap_p = (struct hsearch_data *) calloc(1, sizeof(struct hsearch_data));
 
     if (hcreate_r(HASHMAPCAPACITY, newHashmap_p) == 0) {
-        fprintf(stderr, "\nError: Unable to create hashmap for global arrays.\n");
+        fprintf(stderr, "Error: Unable to create hashmap for global arrays.\n");
         exit(0);
     }
     globalArrs_p->hashmap_p = (struct hsearch_data *) newHashmap_p;
@@ -264,7 +310,7 @@ ArrayObj* addArrToScope(ArrayObj* arrO_p) {
     }, *entry_p;
 
     if (hsearch_r(entry, ENTER, &entry_p, globalArrs_p->hashmap_p) == 0) {
-        fprintf(stderr, "\nError: entry for token failed into global array tracker's hashmap\n");
+        fprintf(stderr, "Error: entry for token failed into global array tracker's hashmap\n");
         exit(0);
     }
     
@@ -304,22 +350,22 @@ ArrayObj* getArrayO(char* lexeme) {
 }
 
 void printArrays() {
-    printf("\n\t --- printing array entries list --- ");
+    fprintf(logsFile_p, "\n\n--- printing array entries list ---\n\n");
     Symbol* arrEntry_p = (Symbol*) malloc(sizeof(Symbol));
     for(int i = 0; i < globalArrs_p->count; i++) {
         ArrayObj* arrO_p = getArrayO(globalArrs_p->ids_p[i]);
-        printf("\n[");
+        fprintf(logsFile_p, "[ ");
         for(int j = 0; j < arrO_p->capacity; j++) {
             arrEntry_p = arrO_p->arr[j];
             if(arrEntry_p)  
-                printf(" %d,", arrEntry_p->val);
+                fprintf(logsFile_p, "%d, ", arrEntry_p->lexeme);
             else 
-                printf(" NULL");
+                fprintf(logsFile_p, "NULL, ");
             
         }
-        printf(" ]");
+        fprintf(logsFile_p, "]");
     }
-    printf("\n\t --- end --- ");
+    fprintf(logsFile_p, "\n---\t\t---\n");
 }
 
 // ------
@@ -334,7 +380,7 @@ PLScope* _newPLScope() {
     struct hsearch_data *newHashmap_p = (struct hsearch_data *) calloc(1, sizeof(struct hsearch_data));
 
      if (hcreate_r(HASHMAPCAPACITY, newHashmap_p) == 0) {
-        fprintf(stderr, "\nError: Unable to create hashmap for parameterList scope.\n");
+        fprintf(stderr, "Error: Unable to create hashmap for parameterList scope.\n");
         exit(0);
     }
     newPLScope_p->hashmap_p = (struct hsearch_data *) newHashmap_p;
@@ -349,7 +395,7 @@ void _addToPL(PLScope* pl_p,  Symbol* symbol_p) {
     }, *entry_p;
 
     if (hsearch_r(entry, ENTER, &entry_p, pl_p->hashmap_p) == 0) {
-        fprintf(stderr, "\nError: entry for token failed into scope's hashtable\n");
+        fprintf(stderr, "Error: entry for token failed into scope's hashtable\n");
         exit(0);
     }
     
@@ -378,13 +424,47 @@ Symbol* _getFromPL(PLScope* pl_p, char lexeme[255]){
 }
 
 void _printPL(PLScope* pl_p) {
-    printf("\n\t --- printing current parameter list --- ");
+    fprintf(logsFile_p, "\n\n--- printing current parameter list ---\n\n");
     Symbol* sym_p = (Symbol*) malloc(sizeof(Symbol));
 
     for(int i = 0; i < pl_p->count; i++ ) {
         sym_p = _getFromPL(pl_p, pl_p->ids_p[i]);
 
-        printf("\nSymbol - lexeme: %s, type: %d, val: %d", sym_p->lexeme, sym_p->type, sym_p->val);
+        fprintf(logsFile_p, "Symbol - lexeme: %s, type: %d, val_origin: %d, val_index: %d\n", sym_p->lexeme, sym_p->type, sym_p->val_origin, sym_p->val_index);
     }
-    printf("\n\t --- finished parameter list ---\n");
+    fprintf(logsFile_p, "\n\n---\t\t---\n\n");
+}
+
+// ------
+int getFreeRegIndex() {
+    FunctionData* funcDataO_p = getClosestEnclosingFunc();
+    int freeRegister = -1;
+    for(int i = 0; i < GEN_PUR_AVAIL_REGS; i++) {
+        if(funcDataO_p->availRegisters[i]) {
+            funcDataO_p->availRegisters[i] = 0;
+            freeRegister = i;
+            break;
+        }
+    }
+    if(freeRegister < 0) {
+        fprintf(stderr, "Error: Out of registers.\n");
+        exit(0);
+    }
+    return freeRegister;
+}
+
+void freeRegister(int index) {
+    getClosestEnclosingFunc()->availRegisters[index] = 1;
+}
+
+void printAvailRegisters() {
+    fprintf(logsFile_p, "\n\n--- printing available general purpose registers ---\n\n");
+    FunctionData* funcDataO_p = getClosestEnclosingFunc();
+    fprintf(logsFile_p, "[ ");
+    for(int i = 0; i < GEN_PUR_AVAIL_REGS; i++) {
+        if(funcDataO_p->availRegisters[i])
+            fprintf(logsFile_p, "%s ", genpurpRegName[i]);
+    }
+    fprintf(logsFile_p, "]\n");
+    fprintf(logsFile_p, "\n\n---\t\t---\n\n");
 }

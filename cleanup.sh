@@ -1,0 +1,1 @@
+rm lex.yy.c minLisp minLisp.output minLisp.tab.c minLisp.tab.h

@@ -1,8 +1,0 @@
-.vscode
-minLisp
-*.output
-*.tab.c
-*.tab.h
-*.gch
-lex.yy.c
-tests/**/**
