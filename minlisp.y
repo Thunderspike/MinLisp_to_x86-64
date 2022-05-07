@@ -138,6 +138,9 @@ function    :   '(' _define ID {
     if(DEBUG)
 		fprintf(logsFile_p, "\tReturn type from function %s: %d\n", $3, $6->type);
 
+    // put value of last expr into %rax
+    printf("movq %s, %%rax\n", symbolMemLoc($6));
+
     // pop func scope
     currScope_p = currScope_p->enclosingScope_p;
 
@@ -382,7 +385,7 @@ expr		:   NUM
         
         // check num of params for existing functions
         if(funcD_p->paramsCount != $3->count) {
-            fprintf(stderr, "Line %d --- Function '%s' expected [%d] number of parms\n", yylloc.first_line, $2, funcD_p->paramsCount);
+            fprintf(stderr, "Line %d --- Function '%s' expected [%d] number of parms but [%d] were passed\n", yylloc.first_line, $2, funcD_p->paramsCount, $3->count);
         }
 
         for(int i = 0; i < $3->count; i++) {
@@ -453,7 +456,7 @@ expr		:   NUM
         printf("movq %s, %s\n", symbolMemLoc(exprSym_p), genpurpRegName[regIndex]);
         exprSym_p = createSymbol(exprSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    
+
     genPrintFunction(symbolMemLoc(exprSym_p));
 
     $$ = exprSym_p;
@@ -879,7 +882,7 @@ expr		:   NUM
     if(DEBUG)
 		fprintf(logsFile_p, "last symbol in expr_list - lexeme: %s, type: %d", sym_p->lexeme, sym_p->type);
     
-    $$ = createSymbol("_SEQ_EXPR", sym_p->type, _REGISTER, -1);
+    $$ = sym_p;
 }
             ;
 actual_list	:   actual_list expr 

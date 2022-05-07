@@ -554,11 +554,11 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,    33,    33,    46,    57,    64,    87,    92,    98,    98,
-     151,   161,   189,   212,   231,   242,   273,   299,   307,   314,
-     345,   345,   357,   417,   439,   461,   473,   480,   473,   503,
-     535,   572,   609,   640,   669,   705,   716,   728,   740,   752,
-     775,   787,   804,   816,   828,   840,   852,   861,   870,   885,
-     904,   913,   943,   972,   981
+     154,   164,   192,   215,   234,   245,   276,   302,   310,   317,
+     348,   348,   360,   420,   442,   464,   476,   483,   476,   506,
+     538,   575,   612,   643,   672,   708,   719,   731,   743,   755,
+     778,   790,   807,   819,   831,   843,   855,   864,   873,   888,
+     907,   916,   946,   975,   984
 };
 #endif
 
@@ -1666,6 +1666,9 @@ yyreduce:
     if(DEBUG)
 		fprintf(logsFile_p, "\tReturn type from function %s: %d\n", (yyvsp[-4].nameVal), (yyvsp[-1].symbolPointerType)->type);
 
+    // put value of last expr into %rax
+    printf("movq %s, %%rax\n", symbolMemLoc((yyvsp[-1].symbolPointerType)));
+
     // pop func scope
     currScope_p = currScope_p->enclosingScope_p;
 
@@ -1675,11 +1678,11 @@ yyreduce:
         printf(".section    .note.GNU-stack,\"\",@progbits\n");  
     }
 }
-#line 1679 "minlisp.tab.c"
+#line 1682 "minlisp.tab.c"
     break;
 
   case 10:
-#line 152 "minlisp.y"
+#line 155 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) param_list - '(' ')'\n", nodeCounter++);
@@ -1689,11 +1692,11 @@ yyreduce:
 
     (yyval.paramsListType) = NULL;
 }
-#line 1693 "minlisp.tab.c"
+#line 1696 "minlisp.tab.c"
     break;
 
   case 11:
-#line 162 "minlisp.y"
+#line 165 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) param_list - '(' id_list ')'\n", nodeCounter++);
@@ -1719,11 +1722,11 @@ yyreduce:
 
     (yyval.paramsListType) = plScope_p;
 }
-#line 1723 "minlisp.tab.c"
+#line 1726 "minlisp.tab.c"
     break;
 
   case 12:
-#line 190 "minlisp.y"
+#line 193 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) id_list - id_list ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));
@@ -1746,11 +1749,11 @@ yyreduce:
      
     (yyval.paramsListType) = plScope_p;
 }
-#line 1750 "minlisp.tab.c"
+#line 1753 "minlisp.tab.c"
     break;
 
   case 13:
-#line 213 "minlisp.y"
+#line 216 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) id_list - ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));     
@@ -1767,11 +1770,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;        
 }
-#line 1771 "minlisp.tab.c"
+#line 1774 "minlisp.tab.c"
     break;
 
   case 14:
-#line 232 "minlisp.y"
+#line 235 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - NUM (%d)\n", nodeCounter++, (yyvsp[0].intVal));
@@ -1782,11 +1785,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_NUMERIC_VAL_", _INT, _REGISTER, regIndex);
 }
-#line 1786 "minlisp.tab.c"
+#line 1789 "minlisp.tab.c"
     break;
 
   case 15:
-#line 243 "minlisp.y"
+#line 246 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));
@@ -1817,11 +1820,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 1821 "minlisp.tab.c"
+#line 1824 "minlisp.tab.c"
     break;
 
   case 16:
-#line 273 "minlisp.y"
+#line 276 "minlisp.y"
                                  {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - ID (%s) '[' expr ']'\n", nodeCounter++, (yyvsp[-3].nameVal));  
@@ -1848,11 +1851,11 @@ yyreduce:
     
     (yyval.symbolPointerType) = createSymbol((yyvsp[-3].nameVal), _INT, _GLOBAL, -1);  
 }
-#line 1852 "minlisp.tab.c"
+#line 1855 "minlisp.tab.c"
     break;
 
   case 17:
-#line 300 "minlisp.y"
+#line 303 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - 'true'\n", nodeCounter++);    
@@ -1860,22 +1863,22 @@ yyreduce:
     // these should just be static symbols
     (yyval.symbolPointerType) = createSymbol("_TRUE", _BOOL, _REGISTER, getFreeRegIndex());
 }
-#line 1864 "minlisp.tab.c"
+#line 1867 "minlisp.tab.c"
     break;
 
   case 18:
-#line 308 "minlisp.y"
+#line 311 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - 'false'\n", nodeCounter++);
 
     (yyval.symbolPointerType) = createSymbol("_FALSE", _BOOL, _REGISTER, getFreeRegIndex());
 }
-#line 1875 "minlisp.tab.c"
+#line 1878 "minlisp.tab.c"
     break;
 
   case 19:
-#line 314 "minlisp.y"
+#line 317 "minlisp.y"
                                            {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr expr expr ')\n", nodeCounter++); 
@@ -1907,11 +1910,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_IF_EXPR_EXPR_EXPR", type, _BOOL, -1);  
 }
-#line 1911 "minlisp.tab.c"
+#line 1914 "minlisp.tab.c"
     break;
 
   case 20:
-#line 345 "minlisp.y"
+#line 348 "minlisp.y"
                                 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'while' expr {} expr ')\n", nodeCounter++); 
@@ -1919,22 +1922,22 @@ yyreduce:
     if((yyvsp[0].symbolPointerType)->type != _UNDETERMINED && (yyvsp[0].symbolPointerType)->type != _BOOL) 
         fprintf(stderr, "Line %d --- Incorrect type for first expression in while expression: Boolean expected\n", yylloc.first_line);
 }
-#line 1923 "minlisp.tab.c"
+#line 1926 "minlisp.tab.c"
     break;
 
   case 21:
-#line 351 "minlisp.y"
+#line 354 "minlisp.y"
            {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'while' expr --> expr ')\n", nodeCounter++); 
     
     (yyval.symbolPointerType) = createSymbol("_WHILE_EXPR_EXPR", (yyvsp[-1].symbolPointerType)->type, _BOOL, -1);
 }
-#line 1934 "minlisp.tab.c"
+#line 1937 "minlisp.tab.c"
     break;
 
   case 22:
-#line 358 "minlisp.y"
+#line 361 "minlisp.y"
 {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' ID (%s) actual_list ')'\n", nodeCounter++, (yyvsp[-2].nameVal));  
@@ -1962,7 +1965,7 @@ yyreduce:
         
         // check num of params for existing functions
         if(funcD_p->paramsCount != (yyvsp[-1].paramsListType)->count) {
-            fprintf(stderr, "Line %d --- Function '%s' expected [%d] number of parms\n", yylloc.first_line, (yyvsp[-2].nameVal), funcD_p->paramsCount);
+            fprintf(stderr, "Line %d --- Function '%s' expected [%d] number of parms but [%d] were passed\n", yylloc.first_line, (yyvsp[-2].nameVal), funcD_p->paramsCount, (yyvsp[-1].paramsListType)->count);
         }
 
         for(int i = 0; i < (yyvsp[-1].paramsListType)->count; i++) {
@@ -1994,11 +1997,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;   
 }
-#line 1998 "minlisp.tab.c"
+#line 2001 "minlisp.tab.c"
     break;
 
   case 23:
-#line 418 "minlisp.y"
+#line 421 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'write' expr ')'\n", nodeCounter++);
@@ -2020,11 +2023,11 @@ yyreduce:
     
     (yyval.symbolPointerType) = exprSym_p;
 }
-#line 2024 "minlisp.tab.c"
+#line 2027 "minlisp.tab.c"
     break;
 
   case 24:
-#line 440 "minlisp.y"
+#line 443 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'writeln' expr ')'\n", nodeCounter++);    
@@ -2041,16 +2044,16 @@ yyreduce:
         printf("movq %s, %s\n", symbolMemLoc(exprSym_p), genpurpRegName[regIndex]);
         exprSym_p = createSymbol(exprSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    
+
     genPrintFunction(symbolMemLoc(exprSym_p));
 
     (yyval.symbolPointerType) = exprSym_p;
 }
-#line 2050 "minlisp.tab.c"
+#line 2053 "minlisp.tab.c"
     break;
 
   case 25:
-#line 462 "minlisp.y"
+#line 465 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'read' ')'\n", nodeCounter++); 
@@ -2062,11 +2065,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_READ", _INT, _OFFSET, regIndex); 
 }
-#line 2066 "minlisp.tab.c"
+#line 2069 "minlisp.tab.c"
     break;
 
   case 26:
-#line 473 "minlisp.y"
+#line 476 "minlisp.y"
                          {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'let' {} '(' assign_list ')' expr ')'\n", nodeCounter++); 
@@ -2075,22 +2078,22 @@ yyreduce:
     createScope(NULL);
 
 }
-#line 2079 "minlisp.tab.c"
+#line 2082 "minlisp.tab.c"
     break;
 
   case 27:
-#line 480 "minlisp.y"
+#line 483 "minlisp.y"
                       {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'let' '(' assign_list ')' {} expr ')'\n", nodeCounter++);    
         printScopeSymbols(currScope_p);
     }
 }
-#line 2090 "minlisp.tab.c"
+#line 2093 "minlisp.tab.c"
     break;
 
   case 28:
-#line 485 "minlisp.y"
+#line 488 "minlisp.y"
            {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'let'  '(' assign_list ')' --> expr ')'\n", nodeCounter++);    
@@ -2109,11 +2112,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2113 "minlisp.tab.c"
+#line 2116 "minlisp.tab.c"
     break;
 
   case 29:
-#line 504 "minlisp.y"
+#line 507 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'set' %s expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));  
@@ -2145,11 +2148,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2149 "minlisp.tab.c"
+#line 2152 "minlisp.tab.c"
     break;
 
   case 30:
-#line 535 "minlisp.y"
+#line 538 "minlisp.y"
                                                   {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'set' %s '[' expr ']' expr ')'\n", nodeCounter++, (yyvsp[-5].nameVal));    
@@ -2187,11 +2190,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2191 "minlisp.tab.c"
+#line 2194 "minlisp.tab.c"
     break;
 
   case 31:
-#line 573 "minlisp.y"
+#line 576 "minlisp.y"
 {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' '+' expr expr ')'\n", nodeCounter++);  
@@ -2228,11 +2231,11 @@ yyreduce:
     // right's register
     (yyval.symbolPointerType) = createSymbol("_PLUS_EXP_EXP", _INT, _REGISTER, rSym_p->val_index);
 }
-#line 2232 "minlisp.tab.c"
+#line 2235 "minlisp.tab.c"
     break;
 
   case 32:
-#line 610 "minlisp.y"
+#line 613 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '-' expr expr ')'\n", nodeCounter++);
@@ -2263,11 +2266,11 @@ yyreduce:
     // left's register
     (yyval.symbolPointerType) = createSymbol("_MIN_EXP_EXP", _INT, _REGISTER, lSym_p->val_index);
 }
-#line 2267 "minlisp.tab.c"
+#line 2270 "minlisp.tab.c"
     break;
 
   case 33:
-#line 641 "minlisp.y"
+#line 644 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '*' expr expr ')'\n", nodeCounter++);    
@@ -2296,11 +2299,11 @@ yyreduce:
     // right's register
     (yyval.symbolPointerType) = createSymbol("_MULT_EXP_EXP", _INT, _REGISTER, rSym_p->val_index);
 }
-#line 2300 "minlisp.tab.c"
+#line 2303 "minlisp.tab.c"
     break;
 
   case 34:
-#line 670 "minlisp.y"
+#line 673 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '/' expr expr ')'\n", nodeCounter++);    
@@ -2336,11 +2339,11 @@ yyreduce:
     // left's register
     (yyval.symbolPointerType) = createSymbol("_DIVIDE_EXP_EXP", _INT, _REGISTER, lSym_p->val_index);
 }
-#line 2340 "minlisp.tab.c"
+#line 2343 "minlisp.tab.c"
     break;
 
   case 35:
-#line 705 "minlisp.y"
+#line 708 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '<' expr expr ')'\n", nodeCounter++);    
@@ -2353,11 +2356,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_LT_EXP_EXP", _BOOL, _REGISTER, -1);
 }
-#line 2357 "minlisp.tab.c"
+#line 2360 "minlisp.tab.c"
     break;
 
   case 36:
-#line 716 "minlisp.y"
+#line 719 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '>' expr expr ')'\n", nodeCounter++);    
@@ -2370,11 +2373,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_GT_EXP_EXP", _BOOL, _REGISTER, -1);
 }
-#line 2374 "minlisp.tab.c"
+#line 2377 "minlisp.tab.c"
     break;
 
   case 37:
-#line 728 "minlisp.y"
+#line 731 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '<=' expr expr ')'\n", nodeCounter++);    
@@ -2387,11 +2390,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_LTE_EXP_EXP", _BOOL, _REGISTER, -1);
 }
-#line 2391 "minlisp.tab.c"
+#line 2394 "minlisp.tab.c"
     break;
 
   case 38:
-#line 740 "minlisp.y"
+#line 743 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '>=' expr expr ')'\n", nodeCounter++);    
@@ -2404,11 +2407,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_GTE_EXP_EXP", _BOOL, _REGISTER, -1);
 }
-#line 2408 "minlisp.tab.c"
+#line 2411 "minlisp.tab.c"
     break;
 
   case 39:
-#line 752 "minlisp.y"
+#line 755 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '=' expr expr ')'\n", nodeCounter++);      
@@ -2432,11 +2435,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2436 "minlisp.tab.c"
+#line 2439 "minlisp.tab.c"
     break;
 
   case 40:
-#line 775 "minlisp.y"
+#line 778 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '<>' expr ')'\n", nodeCounter++); 
@@ -2449,11 +2452,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_NEQ_EXP_EXP", _BOOL, _REGISTER, -1);   
 }
-#line 2453 "minlisp.tab.c"
+#line 2456 "minlisp.tab.c"
     break;
 
   case 41:
-#line 787 "minlisp.y"
+#line 790 "minlisp.y"
                                  {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '-' expr ')'\n", nodeCounter++);  
@@ -2471,11 +2474,11 @@ yyreduce:
     printf("negq %s\n", symbolMemLoc(sym_p));
     (yyval.symbolPointerType) = createSymbol("_NEGAT_EXPR", _INT, _REGISTER, sym_p->val_index);
 }
-#line 2475 "minlisp.tab.c"
+#line 2478 "minlisp.tab.c"
     break;
 
   case 42:
-#line 804 "minlisp.y"
+#line 807 "minlisp.y"
                                        {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'and' expr expr ')'\n", nodeCounter++);
@@ -2488,11 +2491,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_AND", _BOOL, _REGISTER, -1);
 }
-#line 2492 "minlisp.tab.c"
+#line 2495 "minlisp.tab.c"
     break;
 
   case 43:
-#line 816 "minlisp.y"
+#line 819 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '&' expr expr ')'\n", nodeCounter++);    
@@ -2505,11 +2508,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_AND", _BOOL, _REGISTER, -1);
 }
-#line 2509 "minlisp.tab.c"
+#line 2512 "minlisp.tab.c"
     break;
 
   case 44:
-#line 828 "minlisp.y"
+#line 831 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'or' expr expr ')'\n", nodeCounter++); 
@@ -2522,11 +2525,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_OR", _BOOL, _REGISTER, -1);  
 }
-#line 2526 "minlisp.tab.c"
+#line 2529 "minlisp.tab.c"
     break;
 
   case 45:
-#line 840 "minlisp.y"
+#line 843 "minlisp.y"
                                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '|' expr expr ')'\n", nodeCounter++);    
@@ -2539,11 +2542,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_OR", _BOOL, _REGISTER, -1); 
 }
-#line 2543 "minlisp.tab.c"
+#line 2546 "minlisp.tab.c"
     break;
 
   case 46:
-#line 852 "minlisp.y"
+#line 855 "minlisp.y"
                                   {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'not' expr ')'\n", nodeCounter++);    
@@ -2553,11 +2556,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_NEGATION", _BOOL, _REGISTER, -1); 
 }
-#line 2557 "minlisp.tab.c"
+#line 2560 "minlisp.tab.c"
     break;
 
   case 47:
-#line 861 "minlisp.y"
+#line 864 "minlisp.y"
                                  {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '!' expr  ')'\n", nodeCounter++);
@@ -2567,11 +2570,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_NEGATION", _BOOL, _REGISTER, -1); 
 }
-#line 2571 "minlisp.tab.c"
+#line 2574 "minlisp.tab.c"
     break;
 
   case 48:
-#line 870 "minlisp.y"
+#line 873 "minlisp.y"
                                        {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'seq' expr_list ')'\n", nodeCounter++);    
@@ -2584,13 +2587,13 @@ yyreduce:
     if(DEBUG)
 		fprintf(logsFile_p, "last symbol in expr_list - lexeme: %s, type: %d", sym_p->lexeme, sym_p->type);
     
-    (yyval.symbolPointerType) = createSymbol("_SEQ_EXPR", sym_p->type, _REGISTER, -1);
+    (yyval.symbolPointerType) = sym_p;
 }
-#line 2590 "minlisp.tab.c"
+#line 2593 "minlisp.tab.c"
     break;
 
   case 49:
-#line 886 "minlisp.y"
+#line 889 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) actual_list - actual_list expr\n", nodeCounter++); 
@@ -2609,11 +2612,11 @@ yyreduce:
         
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2613 "minlisp.tab.c"
+#line 2616 "minlisp.tab.c"
     break;
 
   case 50:
-#line 905 "minlisp.y"
+#line 908 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) actual_list -> ε\n", nodeCounter++);
@@ -2621,11 +2624,11 @@ yyreduce:
     // left-most node, create a new parameterListScope obj
     (yyval.paramsListType) = _newPLScope();   
 }
-#line 2625 "minlisp.tab.c"
+#line 2628 "minlisp.tab.c"
     break;
 
   case 51:
-#line 914 "minlisp.y"
+#line 917 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list - assign_list '(' ID (%s) expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));
@@ -2655,11 +2658,11 @@ yyreduce:
 
     (yyval.paramsListType) = (yyvsp[-4].paramsListType);  
 }
-#line 2659 "minlisp.tab.c"
+#line 2662 "minlisp.tab.c"
     break;
 
   case 52:
-#line 944 "minlisp.y"
+#line 947 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list -  '(' %s expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));
@@ -2687,11 +2690,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2691 "minlisp.tab.c"
+#line 2694 "minlisp.tab.c"
     break;
 
   case 53:
-#line 972 "minlisp.y"
+#line 975 "minlisp.y"
                                {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr_list - expr_list expr\n", nodeCounter++);
@@ -2701,11 +2704,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;
 }
-#line 2705 "minlisp.tab.c"
+#line 2708 "minlisp.tab.c"
     break;
 
   case 54:
-#line 981 "minlisp.y"
+#line 984 "minlisp.y"
                      {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr_list - expr\n", nodeCounter++);
@@ -2718,11 +2721,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2722 "minlisp.tab.c"
+#line 2725 "minlisp.tab.c"
     break;
 
 
-#line 2726 "minlisp.tab.c"
+#line 2729 "minlisp.tab.c"
 
       default: break;
     }
@@ -2960,7 +2963,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 994 "minlisp.y"
+#line 997 "minlisp.y"
 
 
 int yyerror(char* s) {

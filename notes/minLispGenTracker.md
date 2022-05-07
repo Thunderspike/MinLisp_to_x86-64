@@ -1,10 +1,10 @@
 ```minLisp
 ML		    :=	arrays program      []                         
 arrays		:=	arrays array        []
-            |   ε                   []
+            |   ε                   [x]
 array		:=	( array id num )    []
-program		:=	program function    []
-		    |	function            []                   
+program		:=	program function    [x]
+		    |	function            [x]                   
 function	:=	( define id param_list expr ) [x] // should be good
 param_list	:=	( )                 [x]
 			|	( id_list )         [x]
@@ -20,14 +20,14 @@ expr		:=	num                 [x]
             |	( id actual_list )  [x] // should be good
             |	( write expr )      [x]
             |	( writeln expr )    [x]
-            |	( read )            []
+            |	( read )            [-] // probablygood
             |	( let ( assign_list ) expr ) [x]
             |	( set id expr )     [x] // check
             |	( set id [ expr ] expr ) []
             |	( + expr expr )     [x]
             |	( - expr expr)      [x]
             |	( * expr expr )     [x]
-            |	( / expr expr)      []
+            |	( / expr expr)      [x]
             |	( < expr expr )     |	( > expr expr )  []
             |	( <= expr expr)     |	( >= expr expr)  []
             |	( = expr expr )     []
@@ -36,11 +36,11 @@ expr		:=	num                 [x]
             |	( and  expr expr)  	|	( &  expr expr)  []
             |	( or  expr expr )	|	( |  expr expr ) []
             |	( not expr ) 		|	( ! expr )       []
-            |   ( seq expr_list )       []
-actual_list	:=	actual_list expr        [x]
-		    |	ε                       [x]
-assign_list	:=	assign_list ( id expr ) [x]
-		    |	( id expr )             [x]
-expr_list   :=  expr_list expr          []
-		    |	expr                    []
+            |   ( seq expr_list )       [x] // just returning symbol of last expr
+actual_list	:=	actual_list expr        [x] // generating parameter registers
+		    |	ε                       [x] // nothing
+assign_list	:=	assign_list ( id expr ) [x] // moving expr into stack spaces
+		    |	( id expr )             [x] // moving expr into stack spaces
+expr_list   :=  expr_list expr          [x] // nothing
+		    |	expr                    [x] // nothing
 ```
