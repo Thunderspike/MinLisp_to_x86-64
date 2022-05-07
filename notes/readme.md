@@ -90,14 +90,14 @@ This is what we use to write "hello, world!" to the screen
 14 in rdx because "hello, world!" is length 13 + '\n' is 14
 
 ```c#
-(def add (x, y)
+(define add (x, y)
     ( seq 
         (write (/ (- (+ 22 20) ( * 5 (- y))) y)) # 52 / 2 = 26
         (write (- x y))
         ( + x y )
     )
 )
-(def main() 
+(define main() 
     ( let (
             (a (write 5))
             (b 2)
@@ -108,7 +108,7 @@ This is what we use to write "hello, world!" to the screen
 ```
 
 ```c#
-(def f(x y)
+(define f(x y)
     (let ( (a 2) (b (+ x y)))
         (write (*  (+ x a) b))
 ))

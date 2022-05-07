@@ -1,6 +1,6 @@
 #define _GNU_SOURCE
 
-#define DEBUG 0
+#define DEBUG 1
 #define LOGFILE "logs.txt"
 
 #define STR_SIZE 255
@@ -167,3 +167,6 @@ extern char* funcparamRegName[FUNC_PAR_AVAIL_REGS];
 extern int funcRegs[FUNC_PAR_AVAIL_REGS];
 
 extern FILE* logsFile_p;
+
+// --- debugging
+void printSymbol(Symbol* sym_p);

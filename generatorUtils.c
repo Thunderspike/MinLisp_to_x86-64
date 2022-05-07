@@ -14,7 +14,7 @@ char* symbolMemLoc(Symbol* sym_p) {
             snprintf( origin_s, STR_SIZE, "%s", funcparamRegName[sym_p->val_index] );
             break;
         case _GLOBAL:
-            snprintf( origin_s, STR_SIZE, "undetermined", sym_p->val_index );
+            snprintf( origin_s, STR_SIZE, "%d_undetermined", sym_p->val_index );
             break;
     }
 
@@ -43,8 +43,8 @@ void genDivision(char* dividentReg, char* divisorReg) {
     printf("movq $0, %%rdx\n");
     printf("movq %s, %%rax\n", dividentReg);
     printf("movq %s, %%rcx\n", divisorReg);
-    printf("divq %rcx\n");
-    printf("movq %rax, %s\n", dividentReg);
+    printf("divq %%rcx\n");
+    printf("movq %%rax, %s\n", dividentReg);
     printf("popq %%rcx\n");
     printf("popq %%rdx\n");
     printf("# end division\n\n");
@@ -53,7 +53,7 @@ void genDivision(char* dividentReg, char* divisorReg) {
 void genFunctionHeader(char funcName[STR_SIZE]) {
     // start printing out function header
     printf("\n.type %s, @function\n", funcName);
-    printf("%s:\n\n", funcName);
+    printf("%s:\n\n", funcName);   
 
     printf("subq $128, %%rsp\n");
 
@@ -75,7 +75,7 @@ void genFunctionFooter() {
     printf("movq 120(%%rsp), %%r9\n");
     printf("addq $128, %%rsp\n");
     printf("ret\n\n");
-    printf("# ------------------------------------------------------------------\n\n");
+    printf("# ---------------------------------------\n");
 }
 
 void genFunctionCall(char funcName[STR_SIZE]) {

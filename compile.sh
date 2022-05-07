@@ -1,0 +1,1 @@
+./minlisp < input.ml > minlisp.s

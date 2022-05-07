@@ -554,11 +554,11 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,    33,    33,    46,    57,    64,    87,    92,    98,    98,
-     156,   166,   194,   217,   236,   247,   278,   304,   312,   319,
-     350,   350,   362,   430,   451,   472,   484,   491,   484,   514,
-     546,   583,   618,   648,   676,   705,   716,   728,   740,   752,
+     151,   161,   189,   212,   231,   242,   273,   299,   307,   314,
+     345,   345,   357,   417,   439,   461,   473,   480,   473,   503,
+     535,   572,   609,   640,   669,   705,   716,   728,   740,   752,
      775,   787,   804,   816,   828,   840,   852,   861,   870,   885,
-     893,   905,   935,   964,   973
+     904,   913,   943,   972,   981
 };
 #endif
 
@@ -629,13 +629,13 @@ static const yytype_int8 yydefact[] =
        0,     6,     0,     8,     0,     0,     5,     0,     0,    13,
       10,     0,    17,    18,    15,    14,     0,     0,    12,    11,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    26,     0,     0,     0,    49,     0,     0,     0,     0,
+       0,    26,     0,     0,     0,    50,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     9,     0,    54,     0,
        0,    20,     0,     0,    25,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,    16,    48,    53,     0,     0,    23,
       24,     0,     0,    46,     0,     0,     0,     0,     0,     0,
-      22,    50,     0,    41,     0,     0,     0,     0,     0,     0,
+      22,    49,     0,    41,     0,     0,     0,     0,     0,     0,
        0,     0,    47,     0,     0,    42,    44,     0,    29,     0,
        0,    37,    40,    38,    31,    32,    33,    34,    35,    36,
       39,    43,    45,    19,    21,     0,     0,     0,    27,     0,
@@ -738,8 +738,8 @@ static const yytype_int8 yyr2[] =
        2,     3,     2,     1,     1,     1,     4,     1,     1,     6,
        0,     6,     4,     4,     4,     3,     0,     0,     9,     5,
        8,     5,     5,     5,     5,     5,     5,     5,     5,     5,
-       5,     4,     5,     5,     5,     5,     4,     4,     4,     0,
-       2,     5,     4,     2,     1
+       5,     4,     5,     5,     5,     5,     4,     4,     4,     2,
+       0,     5,     4,     2,     1
 };
 
 
@@ -1556,7 +1556,7 @@ yyreduce:
     initGlobalState();
 
     printf(".text\n");
-    printf(".globl minlisp_main\n");
+    printf(".globl minlisp_main\n\n");
 }
 #line 1562 "minlisp.tab.c"
     break;
@@ -1578,7 +1578,7 @@ yyreduce:
 		fprintf(logsFile_p, "(%d) array - '(' 'array' %s %d ')'\n", nodeCounter++, (yyvsp[-2].nameVal), (yyvsp[-1].intVal));
 
     if(strcasecmp((yyvsp[-2].nameVal), (char*) MAIN) == 0)
-        fprintf(stderr,"Line %d --- Illegal variable name 'main' for arrays'\n", yylloc.first_line);
+        fprintf(stderr, "Line %d --- Illegal variable name 'main' for arrays'\n", yylloc.first_line);
 
     ArrayObj* arrO_p = (ArrayObj*) malloc(sizeof(ArrayObj));
     arrO_p = getArrayO((yyvsp[-2].nameVal));
@@ -1644,20 +1644,17 @@ yyreduce:
 
     // createScope
     createFuncScope((yyvsp[0].nameVal));
-
-    if(strcasecmp((yyvsp[0].nameVal), "main") == 0) {
-        printf(".type minlisp_main, @function\n");
-        printf("minlisp_main:\n");
-        printf("subq $128, %%rsp\n");   
-    } else 
+    if(strcasecmp((yyvsp[0].nameVal), MAIN) == 0)
+        genFunctionHeader((char*)"minlisp_main");
+    else
         genFunctionHeader((yyvsp[0].nameVal));
     
 }
-#line 1657 "minlisp.tab.c"
+#line 1654 "minlisp.tab.c"
     break;
 
   case 9:
-#line 133 "minlisp.y"
+#line 130 "minlisp.y"
                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) function - '(' 'define' ID (%s) --> param_list  expr ')'\n", nodeCounter++, (yyvsp[-4].nameVal));
@@ -1672,19 +1669,17 @@ yyreduce:
     // pop func scope
     currScope_p = currScope_p->enclosingScope_p;
 
-    if(strcasecmp((yyvsp[-4].nameVal), "main") == 0){
-        printf("addq $128, %%rsp\n");
-        printf("ret\n\n");
+    genFunctionFooter();
+    if(strcasecmp((yyvsp[-4].nameVal), MAIN) == 0){
         printf(".size       minlisp_main, .-minlisp_main\n");
         printf(".section    .note.GNU-stack,\"\",@progbits\n");  
-    } else 
-        genFunctionFooter();
+    }
 }
-#line 1684 "minlisp.tab.c"
+#line 1679 "minlisp.tab.c"
     break;
 
   case 10:
-#line 157 "minlisp.y"
+#line 152 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) param_list - '(' ')'\n", nodeCounter++);
@@ -1694,11 +1689,11 @@ yyreduce:
 
     (yyval.paramsListType) = NULL;
 }
-#line 1698 "minlisp.tab.c"
+#line 1693 "minlisp.tab.c"
     break;
 
   case 11:
-#line 167 "minlisp.y"
+#line 162 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) param_list - '(' id_list ')'\n", nodeCounter++);
@@ -1724,11 +1719,11 @@ yyreduce:
 
     (yyval.paramsListType) = plScope_p;
 }
-#line 1728 "minlisp.tab.c"
+#line 1723 "minlisp.tab.c"
     break;
 
   case 12:
-#line 195 "minlisp.y"
+#line 190 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) id_list - id_list ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));
@@ -1751,11 +1746,11 @@ yyreduce:
      
     (yyval.paramsListType) = plScope_p;
 }
-#line 1755 "minlisp.tab.c"
+#line 1750 "minlisp.tab.c"
     break;
 
   case 13:
-#line 218 "minlisp.y"
+#line 213 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) id_list - ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));     
@@ -1772,26 +1767,26 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;        
 }
-#line 1776 "minlisp.tab.c"
+#line 1771 "minlisp.tab.c"
     break;
 
   case 14:
-#line 237 "minlisp.y"
+#line 232 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - NUM (%d)\n", nodeCounter++, (yyvsp[0].intVal));
     
     int regIndex = getFreeRegIndex();
 
-    printf("movq %d, %s\n", (yyvsp[0].intVal), genpurpRegName[regIndex]);
+    printf("movq $%d, %s\n", (yyvsp[0].intVal), genpurpRegName[regIndex]);
 
     (yyval.symbolPointerType) = createSymbol("_NUMERIC_VAL_", _INT, _REGISTER, regIndex);
 }
-#line 1791 "minlisp.tab.c"
+#line 1786 "minlisp.tab.c"
     break;
 
   case 15:
-#line 248 "minlisp.y"
+#line 243 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));
@@ -1822,11 +1817,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 1826 "minlisp.tab.c"
+#line 1821 "minlisp.tab.c"
     break;
 
   case 16:
-#line 278 "minlisp.y"
+#line 273 "minlisp.y"
                                  {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - ID (%s) '[' expr ']'\n", nodeCounter++, (yyvsp[-3].nameVal));  
@@ -1853,11 +1848,11 @@ yyreduce:
     
     (yyval.symbolPointerType) = createSymbol((yyvsp[-3].nameVal), _INT, _GLOBAL, -1);  
 }
-#line 1857 "minlisp.tab.c"
+#line 1852 "minlisp.tab.c"
     break;
 
   case 17:
-#line 305 "minlisp.y"
+#line 300 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - 'true'\n", nodeCounter++);    
@@ -1865,22 +1860,22 @@ yyreduce:
     // these should just be static symbols
     (yyval.symbolPointerType) = createSymbol("_TRUE", _BOOL, _REGISTER, getFreeRegIndex());
 }
-#line 1869 "minlisp.tab.c"
+#line 1864 "minlisp.tab.c"
     break;
 
   case 18:
-#line 313 "minlisp.y"
+#line 308 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - 'false'\n", nodeCounter++);
 
     (yyval.symbolPointerType) = createSymbol("_FALSE", _BOOL, _REGISTER, getFreeRegIndex());
 }
-#line 1880 "minlisp.tab.c"
+#line 1875 "minlisp.tab.c"
     break;
 
   case 19:
-#line 319 "minlisp.y"
+#line 314 "minlisp.y"
                                            {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr expr expr ')\n", nodeCounter++); 
@@ -1912,11 +1907,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_IF_EXPR_EXPR_EXPR", type, _BOOL, -1);  
 }
-#line 1916 "minlisp.tab.c"
+#line 1911 "minlisp.tab.c"
     break;
 
   case 20:
-#line 350 "minlisp.y"
+#line 345 "minlisp.y"
                                 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'while' expr {} expr ')\n", nodeCounter++); 
@@ -1924,52 +1919,41 @@ yyreduce:
     if((yyvsp[0].symbolPointerType)->type != _UNDETERMINED && (yyvsp[0].symbolPointerType)->type != _BOOL) 
         fprintf(stderr, "Line %d --- Incorrect type for first expression in while expression: Boolean expected\n", yylloc.first_line);
 }
-#line 1928 "minlisp.tab.c"
+#line 1923 "minlisp.tab.c"
     break;
 
   case 21:
-#line 356 "minlisp.y"
+#line 351 "minlisp.y"
            {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'while' expr --> expr ')\n", nodeCounter++); 
     
     (yyval.symbolPointerType) = createSymbol("_WHILE_EXPR_EXPR", (yyvsp[-1].symbolPointerType)->type, _BOOL, -1);
 }
-#line 1939 "minlisp.tab.c"
+#line 1934 "minlisp.tab.c"
     break;
 
   case 22:
-#line 363 "minlisp.y"
+#line 358 "minlisp.y"
 {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' ID (%s) actual_list ')'\n", nodeCounter++, (yyvsp[-2].nameVal));  
         _printPL((yyvsp[-1].paramsListType));
     }
 
-    // 0.1 generate assembly function calling code and returning code
-    PLScope* plScope_p = (yyvsp[-1].paramsListType);
-    if(plScope_p) {
-        for(int i = 0; i < plScope_p->count; i++) {
-            Symbol* paramSym_p = _getFromPL(plScope_p, plScope_p->ids_p[i]);
-            printf("movq %s, %s\n", symbolMemLoc(paramSym_p), funcparamRegName[i]);
-            // cleanup parameters's register if it was a temporary variable
-            if(paramSym_p->val_origin == _REGISTER)
-                freeRegister(paramSym_p->val_index);
-        }
-    }
-    genFunctionCall((yyvsp[-2].nameVal));
-    // 0.2 store function resuilt register into temporary register for the expr symbol
-    int regIndex = getFreeRegIndex();
-    printf("movq %%rax, %s\n", funcparamRegName[regIndex]);
-
     // 1. check scope and throw error
     // 2. check for func
     // 3. check for array - throw err
+    // 4. if none - create a func scope
+    // 5. print assembly function call, and put return in temp register
+    // 6. pass up symbol with temp register of function return
 
     Symbol* sym_p = (Symbol*) malloc(sizeof(sym_p));
     sym_p = getSymbol(currScope_p, (yyvsp[-2].nameVal));
     FunctionData* funcD_p = getFuncO((yyvsp[-2].nameVal));
     ArrayObj* arrO_p = getArrayO((yyvsp[-2].nameVal));
+
+    int regIndex = getFreeRegIndex();
 
     if(sym_p) {
         fprintf(stderr, "Line %d --- '%s' is a scope variable, not an function\n", yylloc.first_line, (yyvsp[-2].nameVal));
@@ -2005,63 +1989,68 @@ yyreduce:
         sym_p = createSymbol((yyvsp[-2].nameVal), _INT, _REGISTER, regIndex);
     }
 
+    genFunctionCall((yyvsp[-2].nameVal));
+    printf("movq %%rax, %s\n", genpurpRegName[regIndex]);
+
     (yyval.symbolPointerType) = sym_p;   
 }
-#line 2011 "minlisp.tab.c"
+#line 1998 "minlisp.tab.c"
     break;
 
   case 23:
-#line 431 "minlisp.y"
+#line 418 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'write' expr ')'\n", nodeCounter++);
 
-    Symbol* sym_p = (Symbol*) malloc(sizeof(Symbol));
-    sym_p = (yyvsp[-1].symbolPointerType);
+    Symbol* exprSym_p = (yyvsp[-1].symbolPointerType);
 
-    if(sym_p->type != _INT && sym_p->type != _UNDETERMINED)
+    if(exprSym_p->type != _INT)
         fprintf(stderr, "Line %d --- 'write' expects an integer type\n", yylloc.first_line);
 
-    sym_p->type = _INT;
+    exprSym_p->type = _INT;
 
-    if(sym_p->val_origin != _REGISTER) {
+    if(exprSym_p->val_origin != _REGISTER) {
         int regIndex = getFreeRegIndex();
-        printf("movq %s, %s\n", symbolMemLoc(sym_p), genpurpRegName[regIndex]);
-        sym_p = createSymbol(sym_p->lexeme, _INT, _REGISTER, regIndex);
+        printf("movq %s, %s\n", symbolMemLoc(exprSym_p), genpurpRegName[regIndex]);
+        exprSym_p = createSymbol(exprSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    genPrintFunction(symbolMemLoc(sym_p));
-    (yyval.symbolPointerType) = sym_p;
+
+    genPrintFunction(symbolMemLoc(exprSym_p));
+    
+    (yyval.symbolPointerType) = exprSym_p;
 }
-#line 2036 "minlisp.tab.c"
+#line 2024 "minlisp.tab.c"
     break;
 
   case 24:
-#line 452 "minlisp.y"
+#line 440 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'writeln' expr ')'\n", nodeCounter++);    
 
-    Symbol* sym_p = (Symbol*) malloc(sizeof(Symbol));
-    sym_p = (yyvsp[-1].symbolPointerType);
+    Symbol* exprSym_p = (yyvsp[-1].symbolPointerType);
 
-    if(sym_p->type != _INT && sym_p->type != _UNDETERMINED)
+    if(exprSym_p->type != _INT)
         fprintf(stderr, "Line %d --- '_writeln' expects an integer type", yylloc.first_line);
 
-    sym_p->type = _INT;
+    exprSym_p->type = _INT;
 
-    if(sym_p->val_origin != _REGISTER) {
+    if(exprSym_p->val_origin != _REGISTER) {
         int regIndex = getFreeRegIndex();
-        printf("movq %s, %s\n", symbolMemLoc(sym_p), genpurpRegName[regIndex]);
-        sym_p = createSymbol(sym_p->lexeme, _INT, _REGISTER, regIndex);
+        printf("movq %s, %s\n", symbolMemLoc(exprSym_p), genpurpRegName[regIndex]);
+        exprSym_p = createSymbol(exprSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    genPrintFunction(symbolMemLoc(sym_p));
-    (yyval.symbolPointerType) = sym_p;
+    
+    genPrintFunction(symbolMemLoc(exprSym_p));
+
+    (yyval.symbolPointerType) = exprSym_p;
 }
-#line 2061 "minlisp.tab.c"
+#line 2050 "minlisp.tab.c"
     break;
 
   case 25:
-#line 473 "minlisp.y"
+#line 462 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'read' ')'\n", nodeCounter++); 
@@ -2071,13 +2060,13 @@ yyreduce:
     printf("call minlisp_input\n");
     printf("movq %%rax, %s\n", genpurpRegName[regIndex]);
 
-    (yyval.symbolPointerType) = createSymbol("_READ", _INT, _REGISTER, regIndex); 
+    (yyval.symbolPointerType) = createSymbol("_READ", _INT, _OFFSET, regIndex); 
 }
-#line 2077 "minlisp.tab.c"
+#line 2066 "minlisp.tab.c"
     break;
 
   case 26:
-#line 484 "minlisp.y"
+#line 473 "minlisp.y"
                          {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'let' {} '(' assign_list ')' expr ')'\n", nodeCounter++); 
@@ -2086,22 +2075,22 @@ yyreduce:
     createScope(NULL);
 
 }
-#line 2090 "minlisp.tab.c"
+#line 2079 "minlisp.tab.c"
     break;
 
   case 27:
-#line 491 "minlisp.y"
+#line 480 "minlisp.y"
                       {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'let' '(' assign_list ')' {} expr ')'\n", nodeCounter++);    
         printScopeSymbols(currScope_p);
     }
 }
-#line 2101 "minlisp.tab.c"
+#line 2090 "minlisp.tab.c"
     break;
 
   case 28:
-#line 496 "minlisp.y"
+#line 485 "minlisp.y"
            {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'let'  '(' assign_list ')' --> expr ')'\n", nodeCounter++);    
@@ -2120,11 +2109,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2124 "minlisp.tab.c"
+#line 2113 "minlisp.tab.c"
     break;
 
   case 29:
-#line 515 "minlisp.y"
+#line 504 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'set' %s expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));  
@@ -2156,11 +2145,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2160 "minlisp.tab.c"
+#line 2149 "minlisp.tab.c"
     break;
 
   case 30:
-#line 546 "minlisp.y"
+#line 535 "minlisp.y"
                                                   {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'set' %s '[' expr ']' expr ')'\n", nodeCounter++, (yyvsp[-5].nameVal));    
@@ -2198,17 +2187,17 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2202 "minlisp.tab.c"
+#line 2191 "minlisp.tab.c"
     break;
 
   case 31:
-#line 584 "minlisp.y"
+#line 573 "minlisp.y"
 {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' '+' expr expr ')'\n", nodeCounter++);  
 
-        fprintf(stderr, "Left - Lex: %s, type: %d\n", (yyvsp[-2].symbolPointerType)->lexeme, (yyvsp[-2].symbolPointerType)->type);
-        fprintf(stderr, "Right - Lex: %s, type: %d\n", (yyvsp[-1].symbolPointerType)->lexeme, (yyvsp[-1].symbolPointerType)->type);
+        fprintf(logsFile_p, "Left - Lex: %s, type: %d\n", (yyvsp[-2].symbolPointerType)->lexeme, (yyvsp[-2].symbolPointerType)->type);
+        fprintf(logsFile_p, "Right - Lex: %s, type: %d\n", (yyvsp[-1].symbolPointerType)->lexeme, (yyvsp[-1].symbolPointerType)->type);
     }
          
     // if either expr isn't INT (except undetermined), print an error message, but continue computation
@@ -2221,6 +2210,8 @@ yyreduce:
     // store register in right, free left
     Symbol* lSym_p = (yyvsp[-2].symbolPointerType);
     Symbol* rSym_p = (yyvsp[-1].symbolPointerType);
+    if(DEBUG)
+        printf("# addition\n");
     if(rSym_p->val_origin != _REGISTER) {
         // if right isn't a register, make a new register and store right in it
         int regIndex = getFreeRegIndex();
@@ -2237,11 +2228,11 @@ yyreduce:
     // right's register
     (yyval.symbolPointerType) = createSymbol("_PLUS_EXP_EXP", _INT, _REGISTER, rSym_p->val_index);
 }
-#line 2241 "minlisp.tab.c"
+#line 2232 "minlisp.tab.c"
     break;
 
   case 32:
-#line 619 "minlisp.y"
+#line 610 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '-' expr expr ')'\n", nodeCounter++);
@@ -2254,7 +2245,8 @@ yyreduce:
     
     Symbol* lSym_p = (yyvsp[-2].symbolPointerType);
     Symbol* rSym_p = (yyvsp[-1].symbolPointerType);
-
+    if(DEBUG)
+        printf("# subtraction\n");
     if(lSym_p->val_origin != _REGISTER) {
         // if left isn't a register, make a new register and store left in it
         int regIndex = getFreeRegIndex();
@@ -2271,11 +2263,11 @@ yyreduce:
     // left's register
     (yyval.symbolPointerType) = createSymbol("_MIN_EXP_EXP", _INT, _REGISTER, lSym_p->val_index);
 }
-#line 2275 "minlisp.tab.c"
+#line 2267 "minlisp.tab.c"
     break;
 
   case 33:
-#line 649 "minlisp.y"
+#line 641 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '*' expr expr ')'\n", nodeCounter++);    
@@ -2287,7 +2279,8 @@ yyreduce:
         fprintf(stderr, "Line %d --- Incorrect type for operator *: Integers expected\n", yylloc.first_line);
 
     Symbol* lSym_p = (yyvsp[-2].symbolPointerType);
-    Symbol* rSym_p = (yyvsp[-1].symbolPointerType);
+    Symbol* rSym_p = (yyvsp[-1].symbolPointerType);if(DEBUG)
+        printf("# multiplication\n");
     // if right isn't a register type, make a new register and store right in it
     if(rSym_p->val_origin != _REGISTER) {
         int regIndex = getFreeRegIndex();
@@ -2303,11 +2296,11 @@ yyreduce:
     // right's register
     (yyval.symbolPointerType) = createSymbol("_MULT_EXP_EXP", _INT, _REGISTER, rSym_p->val_index);
 }
-#line 2307 "minlisp.tab.c"
+#line 2300 "minlisp.tab.c"
     break;
 
   case 34:
-#line 677 "minlisp.y"
+#line 670 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '/' expr expr ')'\n", nodeCounter++);    
@@ -2320,15 +2313,22 @@ yyreduce:
 
     Symbol* lSym_p = (yyvsp[-2].symbolPointerType);
     Symbol* rSym_p = (yyvsp[-1].symbolPointerType);
-
+    if(DEBUG)
+            printf("# division\n");
     if(lSym_p->val_origin != _REGISTER) {
         // if left isn't a register, make a new register and store left in it
         int regIndex = getFreeRegIndex();
         printf("movq %s, %s\n", symbolMemLoc(lSym_p), genpurpRegName[regIndex]);
         lSym_p = createSymbol(lSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    
-    genDivision(symbolMemLoc(lSym_p), symbolMemLoc(rSym_p));
+
+    // hacky - am not passing functions registers to divide func, and since I'm pushing two 8 byte needed registers into the stack I have to increase the value of the offset by 16 for _OFFSET type expressions
+    if(rSym_p->val_origin == _OFFSET) {
+        Symbol* tempRSym_p = createSymbol("temp", -1, _OFFSET, rSym_p->val_index + 16);
+        genDivision(symbolMemLoc(lSym_p), symbolMemLoc(tempRSym_p));
+    } else 
+        genDivision(symbolMemLoc(lSym_p), symbolMemLoc(rSym_p));
+
     // free right
     if(rSym_p->val_origin == _REGISTER)
         freeRegister(rSym_p->val_index);
@@ -2593,53 +2593,61 @@ yyreduce:
 #line 886 "minlisp.y"
 {
     if(DEBUG)
+		fprintf(logsFile_p, "(%d) actual_list - actual_list expr\n", nodeCounter++); 
+    
+    PLScope* plScope_p = (yyvsp[-1].paramsListType);
+    Symbol* exprSym_p = (yyvsp[0].symbolPointerType);
+
+    // move expr value into function param register
+    printf("movq %s, %s\n", symbolMemLoc(exprSym_p), funcparamRegName[plScope_p->count]);
+
+    // clean expr if it was a temp register - it's not further processed above
+    if(exprSym_p->val_origin == _REGISTER)
+        freeRegister(exprSym_p->val_index);
+
+    _addToPL(plScope_p, exprSym_p);
+        
+    (yyval.paramsListType) = plScope_p;  
+}
+#line 2613 "minlisp.tab.c"
+    break;
+
+  case 50:
+#line 905 "minlisp.y"
+{
+    if(DEBUG)
 		fprintf(logsFile_p, "(%d) actual_list -> ε\n", nodeCounter++);
   
     // left-most node, create a new parameterListScope obj
     (yyval.paramsListType) = _newPLScope();   
 }
-#line 2602 "minlisp.tab.c"
-    break;
-
-  case 50:
-#line 894 "minlisp.y"
-{
-    if(DEBUG)
-		fprintf(logsFile_p, "(%d) actual_list - actual_list expr\n", nodeCounter++); 
-    
-    PLScope* plScope_p = (yyvsp[-1].paramsListType);
-
-    _addToPL(plScope_p, (yyvsp[0].symbolPointerType));
-        
-    (yyval.paramsListType) = plScope_p;  
-}
-#line 2617 "minlisp.tab.c"
+#line 2625 "minlisp.tab.c"
     break;
 
   case 51:
-#line 906 "minlisp.y"
+#line 914 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list - assign_list '(' ID (%s) expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));
 
-    Symbol* sym_p = malloc(sizeof(Symbol));
-    sym_p = getSymbol(currScope_p, (yyvsp[-2].nameVal));
+    Symbol* scopeNewSym_p = malloc(sizeof(Symbol));
+    scopeNewSym_p = getSymbol(currScope_p, (yyvsp[-2].nameVal));
 
     // lexeme shouldn't exist - if it does its value will getSymbol overwritten
-    if(sym_p){
+    if(scopeNewSym_p){
         fprintf(stderr, "Line %d --- Parameter %s already defined\n", yylloc.first_line, (yyvsp[-2].nameVal));
-        sym_p->type = (yyvsp[-1].symbolPointerType)->type;
-        sym_p->val_origin = _OFFSET;
-        sym_p->val_index = getClosestEnclosingFunc()->stackOffset;
+        scopeNewSym_p->type = (yyvsp[-1].symbolPointerType)->type;
+        scopeNewSym_p->val_origin = _OFFSET;
+        scopeNewSym_p->val_index = getClosestEnclosingFunc()->stackOffset;
     } else {
-        sym_p = createSymbol((yyvsp[-2].nameVal), (yyvsp[-1].symbolPointerType)->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
-        addSymbol(currScope_p, sym_p); 
+        scopeNewSym_p = createSymbol((yyvsp[-2].nameVal), (yyvsp[-1].symbolPointerType)->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
+        addSymbol(currScope_p, scopeNewSym_p); 
     }
 
-    _addToPL((yyvsp[-4].paramsListType), sym_p);
+    _addToPL((yyvsp[-4].paramsListType), scopeNewSym_p);
 
     // generate 'store to stack' statement
-    printf("movq %s, %d(%%rsp)\n", symbolMemLoc(sym_p), sym_p->val_index);
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc((yyvsp[-1].symbolPointerType)), getClosestEnclosingFunc()->stackOffset);
     getClosestEnclosingFunc()->stackOffset += 4;    
     // cleanup register for right expr if _REGISTER
     if((yyvsp[-1].symbolPointerType)->val_origin == _REGISTER)
@@ -2647,31 +2655,31 @@ yyreduce:
 
     (yyval.paramsListType) = (yyvsp[-4].paramsListType);  
 }
-#line 2651 "minlisp.tab.c"
+#line 2659 "minlisp.tab.c"
     break;
 
   case 52:
-#line 936 "minlisp.y"
+#line 944 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list -  '(' %s expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));
 
-    Symbol* sym_p = (Symbol*) malloc(sizeof(Symbol));
-    sym_p = getSymbol(currScope_p, (yyvsp[-2].nameVal));
+    Symbol* scopeNewSym_p = (Symbol*) malloc(sizeof(Symbol));
+    scopeNewSym_p = getSymbol(currScope_p, (yyvsp[-2].nameVal));
 
-    if(sym_p)
-        fprintf(stderr, "Line %d --- Parameter %s already defined\n", yylloc.first_line, (yyvsp[-1].symbolPointerType));
+    if(scopeNewSym_p)
+        fprintf(stderr, "Line %d --- Parameter %s already defined\n", yylloc.first_line, (yyvsp[-2].nameVal));
 
-    sym_p = createSymbol((yyvsp[-2].nameVal), (yyvsp[-1].symbolPointerType)->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
-    addSymbol(currScope_p, sym_p); 
+    scopeNewSym_p = createSymbol((yyvsp[-2].nameVal), (yyvsp[-1].symbolPointerType)->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
+    addSymbol(currScope_p, scopeNewSym_p); 
 
     // always left-most node for id_list - create a new paramListScope to keep track of assigned objects
     PLScope* plScope_p = (PLScope*) malloc(sizeof(PLScope));
     plScope_p = _newPLScope();
-    _addToPL(plScope_p, sym_p);
+    _addToPL(plScope_p, scopeNewSym_p);
 
     // generate 'store to stack' statement
-    printf("movq %s, %d(%%rsp)\n", symbolMemLoc(sym_p), sym_p->val_index);
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc((yyvsp[-1].symbolPointerType)), getClosestEnclosingFunc()->stackOffset);
     getClosestEnclosingFunc()->stackOffset += 4;
      // cleanup register for right expr if _REGISTER
     if((yyvsp[-1].symbolPointerType)->val_origin == _REGISTER)
@@ -2679,11 +2687,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2683 "minlisp.tab.c"
+#line 2691 "minlisp.tab.c"
     break;
 
   case 53:
-#line 964 "minlisp.y"
+#line 972 "minlisp.y"
                                {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr_list - expr_list expr\n", nodeCounter++);
@@ -2693,11 +2701,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;
 }
-#line 2697 "minlisp.tab.c"
+#line 2705 "minlisp.tab.c"
     break;
 
   case 54:
-#line 973 "minlisp.y"
+#line 981 "minlisp.y"
                      {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr_list - expr\n", nodeCounter++);
@@ -2710,11 +2718,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2714 "minlisp.tab.c"
+#line 2722 "minlisp.tab.c"
     break;
 
 
-#line 2718 "minlisp.tab.c"
+#line 2726 "minlisp.tab.c"
 
       default: break;
     }
@@ -2952,7 +2960,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 986 "minlisp.y"
+#line 994 "minlisp.y"
 
 
 int yyerror(char* s) {
@@ -2961,6 +2969,7 @@ int yyerror(char* s) {
 }
 
 int main (void) {
+    logsFile_p = fopen (LOGFILE, "w");
     if (DEBUG && logsFile_p == NULL) {
         fprintf(stderr, "Error writing to logs file. Exiting\n");
         exit(1);

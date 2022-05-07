@@ -52,7 +52,7 @@ arrays      :   %empty
     initGlobalState();
 
     printf(".text\n");
-    printf(".globl minlisp_main\n");
+    printf(".globl minlisp_main\n\n");
 }           
             |  arrays array 
 {
@@ -67,7 +67,7 @@ array       :   '(' _array ID NUM ')'
 		fprintf(logsFile_p, "(%d) array - '(' 'array' %s %d ')'\n", nodeCounter++, $3, $4);
 
     if(strcasecmp($3, (char*) MAIN) == 0)
-        fprintf(stderr,"Line %d --- Illegal variable name 'main' for arrays'\n", yylloc.first_line);
+        fprintf(stderr, "Line %d --- Illegal variable name 'main' for arrays'\n", yylloc.first_line);
 
     ArrayObj* arrO_p = (ArrayObj*) malloc(sizeof(ArrayObj));
     arrO_p = getArrayO($3);
@@ -122,12 +122,9 @@ function    :   '(' _define ID {
 
     // createScope
     createFuncScope($3);
-
-    if(strcasecmp($3, "main") == 0) {
-        printf(".type minlisp_main, @function\n");
-        printf("minlisp_main:\n");
-        printf("subq $128, %%rsp\n");   
-    } else 
+    if(strcasecmp($3, MAIN) == 0)
+        genFunctionHeader((char*)"minlisp_main");
+    else
         genFunctionHeader($3);
     
 } param_list expr ')' {
@@ -144,13 +141,11 @@ function    :   '(' _define ID {
     // pop func scope
     currScope_p = currScope_p->enclosingScope_p;
 
-    if(strcasecmp($3, "main") == 0){
-        printf("addq $128, %%rsp\n");
-        printf("ret\n\n");
+    genFunctionFooter();
+    if(strcasecmp($3, MAIN) == 0){
         printf(".size       minlisp_main, .-minlisp_main\n");
         printf(".section    .note.GNU-stack,\"\",@progbits\n");  
-    } else 
-        genFunctionFooter();
+    }
 }
             ;
 param_list	:   '(' ')' 
@@ -240,7 +235,7 @@ expr		:   NUM
     
     int regIndex = getFreeRegIndex();
 
-    printf("movq %d, %s\n", $1, genpurpRegName[regIndex]);
+    printf("movq $%d, %s\n", $1, genpurpRegName[regIndex]);
 
     $$ = createSymbol("_NUMERIC_VAL_", _INT, _REGISTER, regIndex);
 }
@@ -366,30 +361,19 @@ expr		:   NUM
         _printPL($3);
     }
 
-    // 0.1 generate assembly function calling code and returning code
-    PLScope* plScope_p = $3;
-    if(plScope_p) {
-        for(int i = 0; i < plScope_p->count; i++) {
-            Symbol* paramSym_p = _getFromPL(plScope_p, plScope_p->ids_p[i]);
-            printf("movq %s, %s\n", symbolMemLoc(paramSym_p), funcparamRegName[i]);
-            // cleanup parameters's register if it was a temporary variable
-            if(paramSym_p->val_origin == _REGISTER)
-                freeRegister(paramSym_p->val_index);
-        }
-    }
-    genFunctionCall($2);
-    // 0.2 store function resuilt register into temporary register for the expr symbol
-    int regIndex = getFreeRegIndex();
-    printf("movq %%rax, %s\n", funcparamRegName[regIndex]);
-
     // 1. check scope and throw error
     // 2. check for func
     // 3. check for array - throw err
+    // 4. if none - create a func scope
+    // 5. print assembly function call, and put return in temp register
+    // 6. pass up symbol with temp register of function return
 
     Symbol* sym_p = (Symbol*) malloc(sizeof(sym_p));
     sym_p = getSymbol(currScope_p, $2);
     FunctionData* funcD_p = getFuncO($2);
     ArrayObj* arrO_p = getArrayO($2);
+
+    int regIndex = getFreeRegIndex();
 
     if(sym_p) {
         fprintf(stderr, "Line %d --- '%s' is a scope variable, not an function\n", yylloc.first_line, $2);
@@ -425,6 +409,9 @@ expr		:   NUM
         sym_p = createSymbol($2, _INT, _REGISTER, regIndex);
     }
 
+    genFunctionCall($2);
+    printf("movq %%rax, %s\n", genpurpRegName[regIndex]);
+
     $$ = sym_p;   
 }
             |   '(' _write expr ')' 
@@ -432,42 +419,44 @@ expr		:   NUM
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'write' expr ')'\n", nodeCounter++);
 
-    Symbol* sym_p = (Symbol*) malloc(sizeof(Symbol));
-    sym_p = $3;
+    Symbol* exprSym_p = $3;
 
-    if(sym_p->type != _INT && sym_p->type != _UNDETERMINED)
+    if(exprSym_p->type != _INT)
         fprintf(stderr, "Line %d --- 'write' expects an integer type\n", yylloc.first_line);
 
-    sym_p->type = _INT;
+    exprSym_p->type = _INT;
 
-    if(sym_p->val_origin != _REGISTER) {
+    if(exprSym_p->val_origin != _REGISTER) {
         int regIndex = getFreeRegIndex();
-        printf("movq %s, %s\n", symbolMemLoc(sym_p), genpurpRegName[regIndex]);
-        sym_p = createSymbol(sym_p->lexeme, _INT, _REGISTER, regIndex);
+        printf("movq %s, %s\n", symbolMemLoc(exprSym_p), genpurpRegName[regIndex]);
+        exprSym_p = createSymbol(exprSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    genPrintFunction(symbolMemLoc(sym_p));
-    $$ = sym_p;
+
+    genPrintFunction(symbolMemLoc(exprSym_p));
+    
+    $$ = exprSym_p;
 }
             |   '(' _writeln expr ')' 
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'writeln' expr ')'\n", nodeCounter++);    
 
-    Symbol* sym_p = (Symbol*) malloc(sizeof(Symbol));
-    sym_p = $3;
+    Symbol* exprSym_p = $3;
 
-    if(sym_p->type != _INT && sym_p->type != _UNDETERMINED)
+    if(exprSym_p->type != _INT)
         fprintf(stderr, "Line %d --- '_writeln' expects an integer type", yylloc.first_line);
 
-    sym_p->type = _INT;
+    exprSym_p->type = _INT;
 
-    if(sym_p->val_origin != _REGISTER) {
+    if(exprSym_p->val_origin != _REGISTER) {
         int regIndex = getFreeRegIndex();
-        printf("movq %s, %s\n", symbolMemLoc(sym_p), genpurpRegName[regIndex]);
-        sym_p = createSymbol(sym_p->lexeme, _INT, _REGISTER, regIndex);
+        printf("movq %s, %s\n", symbolMemLoc(exprSym_p), genpurpRegName[regIndex]);
+        exprSym_p = createSymbol(exprSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    genPrintFunction(symbolMemLoc(sym_p));
-    $$ = sym_p;
+    
+    genPrintFunction(symbolMemLoc(exprSym_p));
+
+    $$ = exprSym_p;
 }
             |   '(' _read ')' 
 {
@@ -479,7 +468,7 @@ expr		:   NUM
     printf("call minlisp_input\n");
     printf("movq %%rax, %s\n", genpurpRegName[regIndex]);
 
-    $$ = createSymbol("_READ", _INT, _REGISTER, regIndex); 
+    $$ = createSymbol("_READ", _INT, _OFFSET, regIndex); 
 }
             |   '(' _let {
     if(DEBUG)
@@ -585,8 +574,8 @@ expr		:   NUM
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' '+' expr expr ')'\n", nodeCounter++);  
 
-        fprintf(stderr, "Left - Lex: %s, type: %d\n", $3->lexeme, $3->type);
-        fprintf(stderr, "Right - Lex: %s, type: %d\n", $4->lexeme, $4->type);
+        fprintf(logsFile_p, "Left - Lex: %s, type: %d\n", $3->lexeme, $3->type);
+        fprintf(logsFile_p, "Right - Lex: %s, type: %d\n", $4->lexeme, $4->type);
     }
          
     // if either expr isn't INT (except undetermined), print an error message, but continue computation
@@ -599,6 +588,8 @@ expr		:   NUM
     // store register in right, free left
     Symbol* lSym_p = $3;
     Symbol* rSym_p = $4;
+    if(DEBUG)
+        printf("# addition\n");
     if(rSym_p->val_origin != _REGISTER) {
         // if right isn't a register, make a new register and store right in it
         int regIndex = getFreeRegIndex();
@@ -628,7 +619,8 @@ expr		:   NUM
     
     Symbol* lSym_p = $3;
     Symbol* rSym_p = $4;
-
+    if(DEBUG)
+        printf("# subtraction\n");
     if(lSym_p->val_origin != _REGISTER) {
         // if left isn't a register, make a new register and store left in it
         int regIndex = getFreeRegIndex();
@@ -657,7 +649,8 @@ expr		:   NUM
         fprintf(stderr, "Line %d --- Incorrect type for operator *: Integers expected\n", yylloc.first_line);
 
     Symbol* lSym_p = $3;
-    Symbol* rSym_p = $4;
+    Symbol* rSym_p = $4;if(DEBUG)
+        printf("# multiplication\n");
     // if right isn't a register type, make a new register and store right in it
     if(rSym_p->val_origin != _REGISTER) {
         int regIndex = getFreeRegIndex();
@@ -686,15 +679,22 @@ expr		:   NUM
 
     Symbol* lSym_p = $3;
     Symbol* rSym_p = $4;
-
+    if(DEBUG)
+            printf("# division\n");
     if(lSym_p->val_origin != _REGISTER) {
         // if left isn't a register, make a new register and store left in it
         int regIndex = getFreeRegIndex();
         printf("movq %s, %s\n", symbolMemLoc(lSym_p), genpurpRegName[regIndex]);
         lSym_p = createSymbol(lSym_p->lexeme, _INT, _REGISTER, regIndex);
     }
-    
-    genDivision(symbolMemLoc(lSym_p), symbolMemLoc(rSym_p));
+
+    // hacky - am not passing functions registers to divide func, and since I'm pushing two 8 byte needed registers into the stack I have to increase the value of the offset by 16 for _OFFSET type expressions
+    if(rSym_p->val_origin == _OFFSET) {
+        Symbol* tempRSym_p = createSymbol("temp", -1, _OFFSET, rSym_p->val_index + 16);
+        genDivision(symbolMemLoc(lSym_p), symbolMemLoc(tempRSym_p));
+    } else 
+        genDivision(symbolMemLoc(lSym_p), symbolMemLoc(rSym_p));
+
     // free right
     if(rSym_p->val_origin == _REGISTER)
         freeRegister(rSym_p->val_index);
@@ -882,7 +882,26 @@ expr		:   NUM
     $$ = createSymbol("_SEQ_EXPR", sym_p->type, _REGISTER, -1);
 }
             ;
-actual_list	:   %empty 
+actual_list	:   actual_list expr 
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) actual_list - actual_list expr\n", nodeCounter++); 
+    
+    PLScope* plScope_p = $1;
+    Symbol* exprSym_p = $2;
+
+    // move expr value into function param register
+    printf("movq %s, %s\n", symbolMemLoc(exprSym_p), funcparamRegName[plScope_p->count]);
+
+    // clean expr if it was a temp register - it's not further processed above
+    if(exprSym_p->val_origin == _REGISTER)
+        freeRegister(exprSym_p->val_index);
+
+    _addToPL(plScope_p, exprSym_p);
+        
+    $$ = plScope_p;  
+}
+            |   %empty 
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) actual_list -> ε\n", nodeCounter++);
@@ -890,41 +909,30 @@ actual_list	:   %empty
     // left-most node, create a new parameterListScope obj
     $$ = _newPLScope();   
 }
-            |   actual_list expr 
-{
-    if(DEBUG)
-		fprintf(logsFile_p, "(%d) actual_list - actual_list expr\n", nodeCounter++); 
-    
-    PLScope* plScope_p = $1;
-
-    _addToPL(plScope_p, $2);
-        
-    $$ = plScope_p;  
-}
             ;
 assign_list	:   assign_list '(' ID expr ')' 
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list - assign_list '(' ID (%s) expr ')'\n", nodeCounter++, $3);
 
-    Symbol* sym_p = malloc(sizeof(Symbol));
-    sym_p = getSymbol(currScope_p, $3);
+    Symbol* scopeNewSym_p = malloc(sizeof(Symbol));
+    scopeNewSym_p = getSymbol(currScope_p, $3);
 
     // lexeme shouldn't exist - if it does its value will getSymbol overwritten
-    if(sym_p){
+    if(scopeNewSym_p){
         fprintf(stderr, "Line %d --- Parameter %s already defined\n", yylloc.first_line, $3);
-        sym_p->type = $4->type;
-        sym_p->val_origin = _OFFSET;
-        sym_p->val_index = getClosestEnclosingFunc()->stackOffset;
+        scopeNewSym_p->type = $4->type;
+        scopeNewSym_p->val_origin = _OFFSET;
+        scopeNewSym_p->val_index = getClosestEnclosingFunc()->stackOffset;
     } else {
-        sym_p = createSymbol($3, $4->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
-        addSymbol(currScope_p, sym_p); 
+        scopeNewSym_p = createSymbol($3, $4->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
+        addSymbol(currScope_p, scopeNewSym_p); 
     }
 
-    _addToPL($1, sym_p);
+    _addToPL($1, scopeNewSym_p);
 
     // generate 'store to stack' statement
-    printf("movq %s, %d(%%rsp)\n", symbolMemLoc(sym_p), sym_p->val_index);
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc($4), getClosestEnclosingFunc()->stackOffset);
     getClosestEnclosingFunc()->stackOffset += 4;    
     // cleanup register for right expr if _REGISTER
     if($4->val_origin == _REGISTER)
@@ -937,22 +945,22 @@ assign_list	:   assign_list '(' ID expr ')'
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list -  '(' %s expr ')'\n", nodeCounter++, $2);
 
-    Symbol* sym_p = (Symbol*) malloc(sizeof(Symbol));
-    sym_p = getSymbol(currScope_p, $2);
+    Symbol* scopeNewSym_p = (Symbol*) malloc(sizeof(Symbol));
+    scopeNewSym_p = getSymbol(currScope_p, $2);
 
-    if(sym_p)
-        fprintf(stderr, "Line %d --- Parameter %s already defined\n", yylloc.first_line, $3);
+    if(scopeNewSym_p)
+        fprintf(stderr, "Line %d --- Parameter %s already defined\n", yylloc.first_line, $2);
 
-    sym_p = createSymbol($2, $3->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
-    addSymbol(currScope_p, sym_p); 
+    scopeNewSym_p = createSymbol($2, $3->type, _OFFSET, getClosestEnclosingFunc()->stackOffset);
+    addSymbol(currScope_p, scopeNewSym_p); 
 
     // always left-most node for id_list - create a new paramListScope to keep track of assigned objects
     PLScope* plScope_p = (PLScope*) malloc(sizeof(PLScope));
     plScope_p = _newPLScope();
-    _addToPL(plScope_p, sym_p);
+    _addToPL(plScope_p, scopeNewSym_p);
 
     // generate 'store to stack' statement
-    printf("movq %s, %d(%%rsp)\n", symbolMemLoc(sym_p), sym_p->val_index);
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc($3), getClosestEnclosingFunc()->stackOffset);
     getClosestEnclosingFunc()->stackOffset += 4;
      // cleanup register for right expr if _REGISTER
     if($3->val_origin == _REGISTER)
@@ -991,6 +999,7 @@ int yyerror(char* s) {
 }
 
 int main (void) {
+    logsFile_p = fopen (LOGFILE, "w");
     if (DEBUG && logsFile_p == NULL) {
         fprintf(stderr, "Error writing to logs file. Exiting\n");
         exit(1);

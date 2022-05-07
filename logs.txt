@@ -1,0 +1,55 @@
+(0) arrays - __empty__
+(1) function - '(' 'define' ID (add) {} param_list  expr ')'
+(2) id_list - ID (x)
+(3) id_list - id_list ID (y)
+(4) param_list - '(' id_list ')'
+
+
+--- printing current parameter list ---
+
+Symbol - lexeme: x, type: 1, val_origin: 2, val_index: 0
+Symbol - lexeme: y, type: 1, val_origin: 2, val_index: 1
+---------------------------------------
+
+
+--- printing funcs available to global scope ---
+
+funcName: add, paramCount: 2, funcReturnType: 1, isRecursive: 0, isUndefined: 0
+---------------------------------------
+(5) expr - ID (x)
+(6) expr - ID (y)
+(7) expr - '(' '+' expr expr ')'
+Left - Lex: x, type: 1
+Right - Lex: y, type: 1
+(8) expr_list - expr
+(9) expr - '(' 'seq' expr_list ')'
+
+
+--- printing current parameter list ---
+
+Symbol - lexeme: _PLUS_EXP_EXP, type: 1, val_origin: 1, val_index: 0
+---------------------------------------
+last symbol in expr_list - lexeme: _PLUS_EXP_EXP, type: 1(10) function - '(' 'define' ID (add) --> param_list  expr ')'
+	Return type from function add: 1
+(11) program - function
+(12) function - '(' 'define' ID (main) {} param_list  expr ')'
+(13) param_list - '(' ')'
+(14) expr - '(' 'let' {} '(' assign_list ')' expr ')'
+(15) expr - NUM (5)
+(16) expr - '(' 'write' expr ')'
+(17) assign_list -  '(' a expr ')'
+(18) expr - NUM (2)
+(19) assign_list - assign_list '(' ID (b) expr ')'
+(20) expr - '(' 'let' '(' assign_list ')' {} expr ')'
+
+
+--- printing scope symbols ---
+
+Scope - name: 3, id: 3
+[ { a: 1 (vo: 0, vi: 4) },  { b: 1 (vo: 0, vi: 8) },  ]
+Scope - name: main, id: 2
+[ ]
+Scope - name: top, id: 0
+[ ]
+---------------------------------------
+(21) expr - ID (add)

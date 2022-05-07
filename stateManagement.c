@@ -179,7 +179,7 @@ void printScopeSymbols(Scope* scope_p) {
         else
             break;
     }
-    fprintf(logsFile_p, "\n\n---\t\t---\n\n");
+    fprintf(logsFile_p, "---------------------------------------\n");
 }
 
 // ------
@@ -263,7 +263,7 @@ void printFuncs() {
             func->lexeme, func->paramsCount, func->type, func->isRecursive, func->isUndefined
         );
     }
-    fprintf(logsFile_p, "\n\n---\t\t---\n\n");
+    fprintf(logsFile_p, "---------------------------------------\n");
 }
 
 FunctionData* getClosestEnclosingFunc() {
@@ -358,14 +358,14 @@ void printArrays() {
         for(int j = 0; j < arrO_p->capacity; j++) {
             arrEntry_p = arrO_p->arr[j];
             if(arrEntry_p)  
-                fprintf(logsFile_p, "%d, ", arrEntry_p->lexeme);
+                fprintf(logsFile_p, "%s, ", arrEntry_p->lexeme);
             else 
                 fprintf(logsFile_p, "NULL, ");
             
         }
         fprintf(logsFile_p, "]");
     }
-    fprintf(logsFile_p, "\n---\t\t---\n");
+    fprintf(logsFile_p, "---------------------------------------\n");
 }
 
 // ------
@@ -432,7 +432,7 @@ void _printPL(PLScope* pl_p) {
 
         fprintf(logsFile_p, "Symbol - lexeme: %s, type: %d, val_origin: %d, val_index: %d\n", sym_p->lexeme, sym_p->type, sym_p->val_origin, sym_p->val_index);
     }
-    fprintf(logsFile_p, "\n\n---\t\t---\n\n");
+    fprintf(logsFile_p, "---------------------------------------\n");
 }
 
 // ------
@@ -467,4 +467,10 @@ void printAvailRegisters() {
     }
     fprintf(logsFile_p, "]\n");
     fprintf(logsFile_p, "\n\n---\t\t---\n\n");
+}
+
+// --- debugging
+void printSymbol(Symbol* sym_p) {
+    printf("# { %s: %d (vo: %d, vi: %d) }\n", sym_p->lexeme, sym_p->type, sym_p->val_origin, sym_p->val_index);
+    fprintf(logsFile_p, "{ %s: %d (vo: %d, vi: %d) }\n", sym_p->lexeme, sym_p->type, sym_p->val_origin, sym_p->val_index);
 }

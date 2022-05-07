@@ -32,6 +32,7 @@
     ],
     "files.associations": {
         "*.y": "c",
-        "minlisp.h": "c"
+        "minlisp.h": "c",
+        "type_traits": "c"
     }
 }

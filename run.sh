@@ -1,0 +1,1 @@
+gcc -fomit-frame-pointer minlisp.s minlisp_main.c -o exe
