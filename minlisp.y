@@ -53,6 +53,7 @@ arrays      :   %empty
 
     printf(".text\n");
     printf(".globl minlisp_main\n\n");
+    genNotFunc();
 }           
             |  arrays array 
 {
@@ -302,48 +303,80 @@ expr		:   NUM
             |   _true 
 {
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - 'true'\n", nodeCounter++);    
+		fprintf(logsFile_p, "(%d) expr - 'true'\n", nodeCounter++); 
+
+    int freeReg = getFreeRegIndex();
+
+    printf("\nmovq $1, %s\n", genpurpRegName[freeReg]);
 
     // these should just be static symbols
-    $$ = createSymbol("_TRUE", _BOOL, _REGISTER, getFreeRegIndex());
+    $$ = createSymbol("_TRUE", _BOOL, _REGISTER, freeReg);
 }
             |   _false 
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - 'false'\n", nodeCounter++);
 
-    $$ = createSymbol("_FALSE", _BOOL, _REGISTER, getFreeRegIndex());
+    int freeReg = getFreeRegIndex();
+
+    printf("\nmovq $0, %s\n", genpurpRegName[freeReg]);
+
+    $$ = createSymbol("_FALSE", _BOOL, _REGISTER, freeReg);
 }
-            |   '(' _if expr expr expr ')' {
+            |   '(' _if expr 
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr {} expr expr ')\n", nodeCounter++); 
+    printf("cmpq $0, %s\n", symbolMemLoc($3));
+    if($3->val_origin == _REGISTER)
+        freeRegister($3->val_index);
+
+    char *condFalse = (char *) malloc(sizeof(STR_SIZE));
+    char *condTrue = (char *) malloc(sizeof(STR_SIZE));
+    snprintf( condFalse, STR_SIZE, "cond%dFalse", pushGLS() );
+    snprintf( condTrue, STR_SIZE, "cond%dTrue", peekGLS() );
+    printf("je %s\n\n", condFalse);
+    printf("# %s\n", condTrue);
+}               
+                expr 
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr expr {} expr ')\n", nodeCounter++); 
+
+    char* condEnd = (char *) malloc(sizeof(STR_SIZE));
+    char* condFalse = (char *) malloc(sizeof(STR_SIZE));
+    snprintf( condEnd, STR_SIZE, "cond%dEnd", peekGLS() );
+    snprintf( condFalse, STR_SIZE, "cond%dFalse", peekGLS() );
+    printf("\n");
+    // store result of computation in stack stored by the labelStack
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc($5), peekGLS());
+    printf("jmp %s\n", condEnd);
+    printf("%s:\n", condFalse);
+
+}               
+                expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr expr expr ')\n", nodeCounter++); 
 
-    if($3->type != _BOOL && $3->type != _UNDETERMINED)
+    if($3->type != _BOOL)
         fprintf(stderr, "Line %d --- Incorrect type for first expression in if expression: Boolean expected\n", yylloc.first_line);
 
-    if(DEBUG)
-		fprintf(logsFile_p, "\t_if type expr type: %d\n", $3->type);
-
-    // print error if types don't match, but ignore if either type is undetermined
-    if(
-        $4->type != $5->type &&
-        !($4->type == _UNDETERMINED || $5->type == _UNDETERMINED) 
-    ) {
+    // print error if types don't match
+    if( $5->type != $7->type)
         fprintf(stderr, "Line %d --- Non-matching types used in if statements clauses\n", yylloc.first_line);
-    }
 
-    int type = _UNDETERMINED; // if not bool and int types, just pass up undetermined
-    if($4->type == _UNDETERMINED && $5->type != _UNDETERMINED)
-        type = $5->type;
-    else if($5->type == _UNDETERMINED && $4->type != _UNDETERMINED)
-        type = $4->type;
-    else if($4->type == $5->type)
-        type = $4->type;
+    int stackLocationOfResult = popGLS();
+    char* condEnd = (char *) malloc(sizeof(STR_SIZE));
+    snprintf( condEnd, STR_SIZE, "cond%dEnd", stackLocationOfResult);
+    printf("\n");
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc($7), stackLocationOfResult);
+    printf("%s:\n", condEnd);
+    // store result of whichever's branch execution result into a temp register
+    int regIndex = getFreeRegIndex();
+    printf("movq %d(%%rsp), %s\n", stackLocationOfResult, genpurpRegName[regIndex]);
 
-    // if true first, else second
-    // int val = $3->val == 1 ? $4->val : $5->val;
-
-    $$ = createSymbol("_IF_EXPR_EXPR_EXPR", type, _BOOL, -1);  
+    $$ = createSymbol("_IF_EXPR_EXPR_EXPR", $5->type, _REGISTER, regIndex);  
 }
             |   '(' _while expr {
     if(DEBUG)
@@ -412,6 +445,7 @@ expr		:   NUM
         sym_p = createSymbol($2, _INT, _REGISTER, regIndex);
     }
 
+    genSaveFuncParams();
     genFunctionCall($2);
     printf("movq %%rax, %s\n", genpurpRegName[regIndex]);
 
@@ -529,7 +563,7 @@ expr		:   NUM
         sym_p = createSymbol($3, _INT, _REGISTER, getFreeRegIndex()); 
     }
 
-    printf("movq %s, %s", symbolMemLoc($4), symbolMemLoc(sym_p));
+    printf("movq %s, %s\n", symbolMemLoc($4), symbolMemLoc(sym_p));
     if($4->val_origin == _REGISTER)
         freeRegister($4->val_index);
 
@@ -705,89 +739,82 @@ expr		:   NUM
     // left's register
     $$ = createSymbol("_DIVIDE_EXP_EXP", _INT, _REGISTER, lSym_p->val_index);
 }
-            |   '(' '<' expr expr ')' {
+            |   '(' '<' expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '<' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _INT || $4->type != _INT) 
-    ) 
+    if($3->type != _INT || $4->type != _INT) 
         fprintf(stderr, "Line %d --- Incorrect type for operator <: Integers expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_LT_EXP_EXP", _BOOL, _REGISTER, -1);
-}           |   '(' '>' expr expr ')' {
+    int regIndex = genInequalityExpr($3, $4, (char*) "setl");
+
+    $$ = createSymbol("_LT_EXP_EXP", _BOOL, _REGISTER, regIndex);
+}           
+            |   '(' '>' expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '>' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _INT || $4->type != _INT) 
-    ) 
+    if($3->type != _INT || $4->type != _INT) 
         fprintf(stderr, "Line %d --- Incorrect type for operator >: Integers expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_GT_EXP_EXP", _BOOL, _REGISTER, -1);
+    int regIndex = genInequalityExpr($3, $4, (char*) "setg");
+
+    $$ = createSymbol("_GT_EXP_EXP", _BOOL, _REGISTER, regIndex);
 }
-            |   '(' LTE expr expr ')' {
+            |   '(' LTE expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '<=' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _INT || $4->type != _INT) 
-    ) 
+    if($3->type != _INT || $4->type != _INT) 
         fprintf(stderr, "Line %d --- Incorrect type for operator <=: Integers expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_LTE_EXP_EXP", _BOOL, _REGISTER, -1);
+    int regIndex = genInequalityExpr($3, $4, (char*) "setle");
+
+    $$ = createSymbol("_LTE_EXP_EXP", _BOOL, _REGISTER, regIndex);
 }
-            |   '(' GTE expr expr ')' {
+            |   '(' GTE expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '>=' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _INT || $4->type != _INT) 
-    ) 
+    if($3->type != _INT || $4->type != _INT) 
         fprintf(stderr, "Line %d --- Incorrect type for operator >=: Integers expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_GTE_EXP_EXP", _BOOL, _REGISTER, -1);
-}
-            |   '(' '=' expr expr ')' {
-    if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '=' expr expr ')'\n", nodeCounter++);      
+    int regIndex = genInequalityExpr($3, $4, (char*) "setge");
 
-    Symbol* exp_1 = $3;
-    Symbol* exp_2 = $4;
+    $$ = createSymbol("_GTE_EXP_EXP", _BOOL, _REGISTER, regIndex);
+}
+            |   '(' '=' expr expr ')' 
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' '=' expr expr ')'\n", nodeCounter++); 
 
     Symbol* sym_p = malloc(sizeof(Symbol));
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _INT || $4->type != _INT) 
-    ) 
+    if($3->type != _INT || $4->type != _INT) 
         fprintf(stderr, "Line %d --- Incorrect type for operator =: Integers expected\n", yylloc.first_line);
 
-    // no matter whether UNDEFINED | INT | BOOl combination, return comparison of two exprs
-    sym_p = createSymbol("_EQ_EXP_EXP", _BOOL, _REGISTER, -1);
+    int regIndex = genInequalityExpr($3, $4, (char*) "sete");
 
-    if(DEBUG)
-		fprintf(logsFile_p, "\tlexeme: %s, type: %d\n", sym_p->lexeme, sym_p->type);
-
-    $$ = sym_p;
+    $$ = createSymbol("_EQ_EXP_EXP", _BOOL, _REGISTER, regIndex);
 }
-            |   '(' NEQ expr expr ')' {
+            |   '(' NEQ expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '<>' expr ')'\n", nodeCounter++); 
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _INT || $4->type != _INT) 
-    ) 
+    if($3->type != _INT || $4->type != _INT) 
         fprintf(stderr, "Line %d --- Incorrect type for operator <>: Integers expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_NEQ_EXP_EXP", _BOOL, _REGISTER, -1);   
+    int regIndex = genInequalityExpr($3, $4, (char*) "setne");
+
+    $$ = createSymbol("_NEQ_EXP_EXP", _BOOL, _REGISTER, regIndex);   
 }
-            |   '(' '-' expr ')' {
+            |   '(' '-' expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '-' expr ')'\n", nodeCounter++);  
 
@@ -804,71 +831,77 @@ expr		:   NUM
     printf("negq %s\n", symbolMemLoc(sym_p));
     $$ = createSymbol("_NEGAT_EXPR", _INT, _REGISTER, sym_p->val_index);
 }
-            |   '(' _and expr expr ')' {
+            |   '(' _and expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'and' expr expr ')'\n", nodeCounter++);
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _BOOL || $4->type != _BOOL) 
-    ) 
+    if($3->type != _BOOL || $4->type != _BOOL) 
         fprintf(stderr, "Line %d --- Incorrect type for operator 'and': Booleans expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_AND", _BOOL, _REGISTER, -1);
+    int regIndex = genLogiInequalityExpr($3, $4, (char*) "and");
+
+    $$ = createSymbol("_AND", _BOOL, _REGISTER, regIndex);
 }
-            |   '(' '&' expr expr ')' {
+            |   '(' '&' expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '&' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _BOOL || $4->type != _BOOL) 
-    ) 
+    if($3->type != _BOOL || $4->type != _BOOL) 
         fprintf(stderr, "Line %d --- Incorrect type for operator '&': Booleans expected\n", yylloc.first_line);
+
+    int regIndex = genLogiInequalityExpr($3, $4, (char*) "and");
 
     $$ = createSymbol("_AND", _BOOL, _REGISTER, -1);
 }
-            |   '(' _or expr expr ')' {
+            |   '(' _or expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'or' expr expr ')'\n", nodeCounter++); 
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _BOOL || $4->type != _BOOL) 
-    ) 
+    if($3->type != _BOOL || $4->type != _BOOL) 
         fprintf(stderr, "Line %d --- Incorrect type for operator 'or': Booleans expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_OR", _BOOL, _REGISTER, -1);  
+    int regIndex = genLogiInequalityExpr($3, $4, (char*) "or");
+
+    $$ = createSymbol("_OR", _BOOL, _REGISTER, regIndex);  
 }
-            |   '(' '|' expr expr ')' {
+            |   '(' '|' expr expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '|' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !($3->type == _UNDETERMINED || $4->type == _UNDETERMINED) && 
-        ($3->type != _BOOL || $4->type != _BOOL) 
-    ) 
+    if($3->type != _BOOL || $4->type != _BOOL) 
         fprintf(stderr, "Line %d --- Incorrect type for operator '|': Booleans expected\n", yylloc.first_line);
 
-    $$ = createSymbol("_OR", _BOOL, _REGISTER, -1); 
+    int regIndex = genLogiInequalityExpr($3, $4, (char*) "or");
+
+    $$ = createSymbol("_OR", _BOOL, _REGISTER, regIndex); 
 }
-            |   '(' _not expr ')' {
+            |   '(' _not expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'not' expr ')'\n", nodeCounter++);    
 
-    if($3->type != _UNDETERMINED && $3->type != _BOOL)
+    if($3->type != _BOOL)
         fprintf(stderr, "Line %d --- Incorrect type for operator 'not': Boolean expected\n", yylloc.first_line);
+    
+    int regIndex = genLogiInequalityExpr($3, NULL, (char*) "not");
 
-    $$ = createSymbol("_NEGATION", _BOOL, _REGISTER, -1); 
+    $$ = createSymbol("_NEGATION", _BOOL, _REGISTER, regIndex); 
 }
-            |   '(' '!' expr ')' {
+            |   '(' '!' expr ')' 
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '!' expr  ')'\n", nodeCounter++);
 
-    if($3->type != _UNDETERMINED  && $3->type != _BOOL)
+    if($3->type != _BOOL)
         fprintf(stderr, "Line %d --- Incorrect type for operator '!': Boolean expected\n", yylloc.first_line);
+    
+    int regIndex = genLogiInequalityExpr($3, NULL, (char*) "not");
 
-    $$ = createSymbol("_NEGATION", _BOOL, _REGISTER, -1); 
+    $$ = createSymbol("_NEGATION", _BOOL, _REGISTER, regIndex); 
 }
             |   '(' _seq expr_list ')' {
     if(DEBUG) {

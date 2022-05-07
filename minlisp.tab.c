@@ -500,11 +500,11 @@ union yyalloc
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  37
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  16
+#define YYNNTS  18
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  54
+#define YYNRULES  56
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  149
+#define YYNSTATES  151
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   277
@@ -553,12 +553,12 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    33,    33,    46,    57,    64,    87,    92,    98,    98,
-     154,   164,   192,   215,   234,   245,   276,   302,   310,   317,
-     348,   348,   360,   420,   442,   464,   476,   483,   476,   506,
-     538,   575,   612,   643,   672,   708,   719,   731,   743,   755,
-     778,   790,   807,   819,   831,   843,   855,   864,   873,   888,
-     907,   916,   946,   975,   984
+       0,    33,    33,    46,    58,    65,    88,    93,    99,    99,
+     155,   165,   193,   216,   235,   246,   277,   303,   315,   327,
+     342,   326,   381,   381,   393,   454,   476,   498,   510,   517,
+     510,   540,   572,   609,   646,   677,   706,   742,   754,   766,
+     778,   790,   804,   816,   834,   846,   858,   870,   882,   894,
+     906,   921,   940,   949,   979,  1008,  1017
 };
 #endif
 
@@ -573,7 +573,7 @@ static const char *const yytname[] =
   "')'", "'['", "']'", "'+'", "'-'", "'*'", "'/'", "'<'", "'>'", "'='",
   "'&'", "'|'", "'!'", "$accept", "ML", "arrays", "array", "program",
   "function", "$@1", "param_list", "id_list", "expr", "$@2", "$@3", "$@4",
-  "actual_list", "assign_list", "expr_list", YY_NULLPTR
+  "$@5", "$@6", "actual_list", "assign_list", "expr_list", YY_NULLPTR
 };
 #endif
 
@@ -603,21 +603,22 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     -31,     6,    -8,   -31,    34,   -31,     5,   -31,    54,    55,
-      77,   -31,    61,   -31,    74,    62,   -31,    32,   102,   -31,
-     -31,    60,   -31,   -31,    75,   -31,    59,    83,   -31,   -31,
-     102,   102,   102,   102,   102,   102,    86,   102,   102,   102,
-      78,   -31,   102,   102,   102,   -31,   102,   102,   102,   102,
-     102,   102,   102,   102,   102,   102,   -31,    90,   -31,    10,
-     102,   -31,    96,    97,   -31,   102,   102,    98,    92,   103,
-     102,   102,   102,    38,   102,    80,   102,   102,   102,   102,
-     102,   102,   102,   104,   -31,   -31,   -31,   102,   102,   -31,
-     -31,   105,   106,   -31,   102,   107,   109,   110,   111,   112,
+     -31,     6,    -8,   -31,    25,   -31,    14,   -31,    18,    54,
+      71,   -31,    61,   -31,    58,    62,   -31,    32,   112,   -31,
+     -31,    60,   -31,   -31,    72,   -31,    59,    74,   -31,   -31,
+     112,   112,   112,   112,   112,   112,    75,   112,   112,   112,
+      79,   -31,   112,   112,   112,   -31,   112,   112,   112,   112,
+     112,   112,   112,   112,   112,   112,   -31,    70,   -31,    10,
+     -31,   -31,    77,    78,   -31,   112,   112,    80,    93,    84,
+     112,   112,   112,    38,   112,   103,   112,   112,   112,   112,
+     112,   112,   112,    87,   -31,   -31,   -31,   112,   112,   -31,
+     -31,    97,    98,   -31,   112,    99,    85,   106,   107,   108,
      -31,   -31,   113,   -31,   114,   115,   116,   117,   118,   119,
-     120,   121,   -31,   122,   123,   -31,   -31,   101,   -31,   127,
+     120,   121,   -31,   -31,   122,   -31,   -31,    91,   -31,   126,
      -13,   -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,
-     -31,   -31,   -31,   -31,   -31,   102,   102,   128,   -31,   126,
-     129,   102,   102,   -31,   -31,   130,   131,   -31,   -31
+     -31,   -31,   -31,   112,   -31,   112,   112,   127,   -31,   125,
+     128,   129,   112,   112,   -31,   -31,   -31,   130,   131,   -31,
+     -31
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -629,31 +630,32 @@ static const yytype_int8 yydefact[] =
        0,     6,     0,     8,     0,     0,     5,     0,     0,    13,
       10,     0,    17,    18,    15,    14,     0,     0,    12,    11,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    26,     0,     0,     0,    50,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     9,     0,    54,     0,
-       0,    20,     0,     0,    25,     0,     0,     0,     0,     0,
+       0,    28,     0,     0,     0,    52,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     9,     0,    56,     0,
+      19,    22,     0,     0,    27,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    16,    48,    53,     0,     0,    23,
-      24,     0,     0,    46,     0,     0,     0,     0,     0,     0,
-      22,    49,     0,    41,     0,     0,     0,     0,     0,     0,
-       0,     0,    47,     0,     0,    42,    44,     0,    29,     0,
-       0,    37,    40,    38,    31,    32,    33,    34,    35,    36,
-      39,    43,    45,    19,    21,     0,     0,     0,    27,     0,
-       0,     0,     0,    30,    52,     0,     0,    51,    28
+       0,     0,     0,     0,    16,    50,    55,     0,     0,    25,
+      26,     0,     0,    48,     0,     0,     0,     0,     0,     0,
+      24,    51,     0,    43,     0,     0,     0,     0,     0,     0,
+       0,     0,    49,    20,     0,    44,    46,     0,    31,     0,
+       0,    39,    42,    40,    33,    34,    35,    36,    37,    38,
+      41,    45,    47,     0,    23,     0,     0,     0,    29,     0,
+       0,     0,     0,     0,    21,    32,    54,     0,     0,    53,
+      30
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -31,   -31,   -31,   -31,   -31,   145,   -31,   -31,   -31,   -30,
-     -31,   -31,   -31,   -31,   -31,   -31
+     -31,   -31,   -31,   -31,   -31,   144,   -31,   -31,   -31,   -30,
+     -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
       -1,     1,     2,     5,     6,     7,    15,    18,    21,    27,
-      88,    69,   142,    73,   120,    59
+      87,   133,    88,    69,   143,    73,   120,    59
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -663,40 +665,40 @@ static const yytype_uint8 yytable[] =
 {
       57,    58,    60,    61,    62,    63,     3,    65,    66,    67,
      137,   138,    70,    71,    72,     4,    74,    75,    76,    77,
-      78,    79,    80,    81,    82,    83,    22,    23,    10,    86,
-      87,    24,    25,    26,    85,    91,    92,     8,    95,     9,
+      78,    79,    80,    81,    82,    83,    22,    23,     8,    86,
+       9,    24,    25,    26,    85,    91,    92,    10,    95,    12,
       97,    98,    99,   101,   102,   104,   105,   106,   107,   108,
      109,   110,   111,    19,    22,    23,    20,   113,   114,    24,
       25,    26,   100,    31,   117,    32,    33,    34,    35,    36,
-      37,    38,    39,    40,    41,    12,    13,    42,    43,    44,
-      45,    28,     9,    14,    29,    17,    46,    47,    48,    49,
-      50,    51,    52,    53,    54,    55,    22,    23,    16,    68,
-      30,    24,    25,    26,   103,   139,   140,    56,    22,    23,
-      64,   145,   146,    24,    25,    26,    84,    94,    22,    23,
-      89,    90,    93,    24,    25,    26,    96,   135,   112,   115,
-     116,   118,   119,     0,   121,   122,   123,   124,   125,   126,
-     127,   128,   129,   130,   131,   132,   133,   134,   136,   141,
-     143,    11,     0,   144,   147,   148
+      37,    38,    39,    40,    41,    13,     9,    42,    43,    44,
+      45,    28,    16,    14,    29,    17,    46,    47,    48,    49,
+      50,    51,    52,    53,    54,    55,    84,    30,    56,    64,
+      68,    89,    90,   139,    93,   140,   141,    96,   119,    22,
+      23,   112,   147,   148,    24,    25,    26,   135,    94,    22,
+      23,   115,   116,   118,    24,    25,    26,   103,    22,    23,
+     121,   122,   123,    24,    25,    26,     0,   124,   125,   126,
+     127,   128,   129,   130,   131,   132,   134,   136,   142,   144,
+      11,     0,   145,   146,   149,   150
 };
 
 static const yytype_int16 yycheck[] =
 {
       30,    31,    32,    33,    34,    35,     0,    37,    38,    39,
       23,    24,    42,    43,    44,    23,    46,    47,    48,    49,
-      50,    51,    52,    53,    54,    55,    16,    17,    23,    59,
-      60,    21,    22,    23,    24,    65,    66,     3,    68,     5,
+      50,    51,    52,    53,    54,    55,    16,    17,     3,    59,
+       5,    21,    22,    23,    24,    65,    66,    23,    68,    21,
       70,    71,    72,    73,    74,    75,    76,    77,    78,    79,
       80,    81,    82,    21,    16,    17,    24,    87,    88,    21,
       22,    23,    24,     4,    94,     6,     7,     8,     9,    10,
-      11,    12,    13,    14,    15,    21,    21,    18,    19,    20,
-      21,    21,     5,    22,    24,    23,    27,    28,    29,    30,
-      31,    32,    33,    34,    35,    36,    16,    17,    24,    21,
-      25,    21,    22,    23,    24,   135,   136,    24,    16,    17,
-      24,   141,   142,    21,    22,    23,    26,    25,    16,    17,
-      24,    24,    24,    21,    22,    23,    23,    26,    24,    24,
-      24,    24,    23,    -1,    24,    24,    24,    24,    24,    24,
-      24,    24,    24,    24,    24,    24,    24,    24,    21,    21,
-      24,     6,    -1,    24,    24,    24
+      11,    12,    13,    14,    15,    21,     5,    18,    19,    20,
+      21,    21,    24,    22,    24,    23,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    26,    25,    24,    24,
+      21,    24,    24,   133,    24,   135,   136,    23,    23,    16,
+      17,    24,   142,   143,    21,    22,    23,    26,    25,    16,
+      17,    24,    24,    24,    21,    22,    23,    24,    16,    17,
+      24,    24,    24,    21,    22,    23,    -1,    24,    24,    24,
+      24,    24,    24,    24,    24,    24,    24,    21,    21,    24,
+       6,    -1,    24,    24,    24,    24
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -708,38 +710,39 @@ static const yytype_int8 yystos[] =
       24,    45,    16,    17,    21,    22,    23,    46,    21,    24,
       25,     4,     6,     7,     8,     9,    10,    11,    12,    13,
       14,    15,    18,    19,    20,    21,    27,    28,    29,    30,
-      31,    32,    33,    34,    35,    36,    24,    46,    46,    52,
-      46,    46,    46,    46,    24,    46,    46,    46,    21,    48,
-      46,    46,    46,    50,    46,    46,    46,    46,    46,    46,
-      46,    46,    46,    46,    26,    24,    46,    46,    47,    24,
+      31,    32,    33,    34,    35,    36,    24,    46,    46,    54,
+      46,    46,    46,    46,    24,    46,    46,    46,    21,    50,
+      46,    46,    46,    52,    46,    46,    46,    46,    46,    46,
+      46,    46,    46,    46,    26,    24,    46,    47,    49,    24,
       24,    46,    46,    24,    25,    46,    23,    46,    46,    46,
       24,    46,    46,    24,    46,    46,    46,    46,    46,    46,
       46,    46,    24,    46,    46,    24,    24,    46,    24,    23,
-      51,    24,    24,    24,    24,    24,    24,    24,    24,    24,
-      24,    24,    24,    24,    24,    26,    21,    23,    24,    46,
-      46,    21,    49,    24,    24,    46,    46,    24,    24
+      53,    24,    24,    24,    24,    24,    24,    24,    24,    24,
+      24,    24,    24,    48,    24,    26,    21,    23,    24,    46,
+      46,    46,    21,    51,    24,    24,    24,    46,    46,    24,
+      24
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
        0,    37,    38,    39,    39,    40,    41,    41,    43,    42,
-      44,    44,    45,    45,    46,    46,    46,    46,    46,    46,
-      47,    46,    46,    46,    46,    46,    48,    49,    46,    46,
+      44,    44,    45,    45,    46,    46,    46,    46,    46,    47,
+      48,    46,    49,    46,    46,    46,    46,    46,    50,    51,
       46,    46,    46,    46,    46,    46,    46,    46,    46,    46,
-      46,    46,    46,    46,    46,    46,    46,    46,    46,    50,
-      50,    51,    51,    52,    52
+      46,    46,    46,    46,    46,    46,    46,    46,    46,    46,
+      46,    52,    52,    53,    53,    54,    54
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     2,     0,     2,     5,     2,     1,     0,     7,
-       2,     3,     2,     1,     1,     1,     4,     1,     1,     6,
-       0,     6,     4,     4,     4,     3,     0,     0,     9,     5,
-       8,     5,     5,     5,     5,     5,     5,     5,     5,     5,
-       5,     4,     5,     5,     5,     5,     4,     4,     4,     2,
-       0,     5,     4,     2,     1
+       2,     3,     2,     1,     1,     1,     4,     1,     1,     0,
+       0,     8,     0,     6,     4,     4,     4,     3,     0,     0,
+       9,     5,     8,     5,     5,     5,     5,     5,     5,     5,
+       5,     5,     5,     4,     5,     5,     5,     5,     4,     4,
+       4,     2,     0,     5,     4,     2,     1
 };
 
 
@@ -1543,7 +1546,7 @@ yyreduce:
     if(strcasecmp(lastF_p, (char*) MAIN) != 0) 
         fprintf(stderr, "Line %d --- Last function must be 'main'.\n", yylloc.first_line);
 }
-#line 1547 "minlisp.tab.c"
+#line 1550 "minlisp.tab.c"
     break;
 
   case 3:
@@ -1557,22 +1560,23 @@ yyreduce:
 
     printf(".text\n");
     printf(".globl minlisp_main\n\n");
+    genNotFunc();
 }
-#line 1562 "minlisp.tab.c"
+#line 1566 "minlisp.tab.c"
     break;
 
   case 4:
-#line 58 "minlisp.y"
+#line 59 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) arrays - arrays array\n", nodeCounter++);
 
 }
-#line 1572 "minlisp.tab.c"
+#line 1576 "minlisp.tab.c"
     break;
 
   case 5:
-#line 65 "minlisp.y"
+#line 66 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) array - '(' 'array' %s %d ')'\n", nodeCounter++, (yyvsp[-2].nameVal), (yyvsp[-1].intVal));
@@ -1594,29 +1598,29 @@ yyreduce:
         addArrToScope(createArrayO((yyvsp[-2].nameVal), size));
     }
 }
-#line 1598 "minlisp.tab.c"
+#line 1602 "minlisp.tab.c"
     break;
 
   case 6:
-#line 88 "minlisp.y"
+#line 89 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) program - program function\n", nodeCounter++);
 }
-#line 1607 "minlisp.tab.c"
+#line 1611 "minlisp.tab.c"
     break;
 
   case 7:
-#line 93 "minlisp.y"
+#line 94 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) program - function\n", nodeCounter++);
 }
-#line 1616 "minlisp.tab.c"
+#line 1620 "minlisp.tab.c"
     break;
 
   case 8:
-#line 98 "minlisp.y"
+#line 99 "minlisp.y"
                                {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) function - '(' 'define' ID (%s) {} param_list  expr ')'\n", nodeCounter++, (yyvsp[0].nameVal));
@@ -1650,11 +1654,11 @@ yyreduce:
         genFunctionHeader((yyvsp[0].nameVal));
     
 }
-#line 1654 "minlisp.tab.c"
+#line 1658 "minlisp.tab.c"
     break;
 
   case 9:
-#line 130 "minlisp.y"
+#line 131 "minlisp.y"
                       {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) function - '(' 'define' ID (%s) --> param_list  expr ')'\n", nodeCounter++, (yyvsp[-4].nameVal));
@@ -1678,11 +1682,11 @@ yyreduce:
         printf(".section    .note.GNU-stack,\"\",@progbits\n");  
     }
 }
-#line 1682 "minlisp.tab.c"
+#line 1686 "minlisp.tab.c"
     break;
 
   case 10:
-#line 155 "minlisp.y"
+#line 156 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) param_list - '(' ')'\n", nodeCounter++);
@@ -1692,11 +1696,11 @@ yyreduce:
 
     (yyval.paramsListType) = NULL;
 }
-#line 1696 "minlisp.tab.c"
+#line 1700 "minlisp.tab.c"
     break;
 
   case 11:
-#line 165 "minlisp.y"
+#line 166 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) param_list - '(' id_list ')'\n", nodeCounter++);
@@ -1722,11 +1726,11 @@ yyreduce:
 
     (yyval.paramsListType) = plScope_p;
 }
-#line 1726 "minlisp.tab.c"
+#line 1730 "minlisp.tab.c"
     break;
 
   case 12:
-#line 193 "minlisp.y"
+#line 194 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) id_list - id_list ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));
@@ -1749,11 +1753,11 @@ yyreduce:
      
     (yyval.paramsListType) = plScope_p;
 }
-#line 1753 "minlisp.tab.c"
+#line 1757 "minlisp.tab.c"
     break;
 
   case 13:
-#line 216 "minlisp.y"
+#line 217 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) id_list - ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));     
@@ -1770,11 +1774,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;        
 }
-#line 1774 "minlisp.tab.c"
+#line 1778 "minlisp.tab.c"
     break;
 
   case 14:
-#line 235 "minlisp.y"
+#line 236 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - NUM (%d)\n", nodeCounter++, (yyvsp[0].intVal));
@@ -1785,11 +1789,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_NUMERIC_VAL_", _INT, _REGISTER, regIndex);
 }
-#line 1789 "minlisp.tab.c"
+#line 1793 "minlisp.tab.c"
     break;
 
   case 15:
-#line 246 "minlisp.y"
+#line 247 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - ID (%s)\n", nodeCounter++, (yyvsp[0].nameVal));
@@ -1820,11 +1824,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 1824 "minlisp.tab.c"
+#line 1828 "minlisp.tab.c"
     break;
 
   case 16:
-#line 276 "minlisp.y"
+#line 277 "minlisp.y"
                                  {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - ID (%s) '[' expr ']'\n", nodeCounter++, (yyvsp[-3].nameVal));  
@@ -1851,70 +1855,109 @@ yyreduce:
     
     (yyval.symbolPointerType) = createSymbol((yyvsp[-3].nameVal), _INT, _GLOBAL, -1);  
 }
-#line 1855 "minlisp.tab.c"
+#line 1859 "minlisp.tab.c"
     break;
 
   case 17:
-#line 303 "minlisp.y"
+#line 304 "minlisp.y"
 {
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - 'true'\n", nodeCounter++);    
+		fprintf(logsFile_p, "(%d) expr - 'true'\n", nodeCounter++); 
+
+    int freeReg = getFreeRegIndex();
+
+    printf("\nmovq $1, %s\n", genpurpRegName[freeReg]);
 
     // these should just be static symbols
-    (yyval.symbolPointerType) = createSymbol("_TRUE", _BOOL, _REGISTER, getFreeRegIndex());
+    (yyval.symbolPointerType) = createSymbol("_TRUE", _BOOL, _REGISTER, freeReg);
 }
-#line 1867 "minlisp.tab.c"
+#line 1875 "minlisp.tab.c"
     break;
 
   case 18:
-#line 311 "minlisp.y"
+#line 316 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - 'false'\n", nodeCounter++);
 
-    (yyval.symbolPointerType) = createSymbol("_FALSE", _BOOL, _REGISTER, getFreeRegIndex());
+    int freeReg = getFreeRegIndex();
+
+    printf("\nmovq $0, %s\n", genpurpRegName[freeReg]);
+
+    (yyval.symbolPointerType) = createSymbol("_FALSE", _BOOL, _REGISTER, freeReg);
 }
-#line 1878 "minlisp.tab.c"
+#line 1890 "minlisp.tab.c"
     break;
 
   case 19:
-#line 317 "minlisp.y"
-                                           {
+#line 327 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr expr expr ')\n", nodeCounter++); 
+		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr {} expr expr ')\n", nodeCounter++); 
+    printf("cmpq $0, %s\n", symbolMemLoc((yyvsp[0].symbolPointerType)));
+    if((yyvsp[0].symbolPointerType)->val_origin == _REGISTER)
+        freeRegister((yyvsp[0].symbolPointerType)->val_index);
 
-    if((yyvsp[-3].symbolPointerType)->type != _BOOL && (yyvsp[-3].symbolPointerType)->type != _UNDETERMINED)
-        fprintf(stderr, "Line %d --- Incorrect type for first expression in if expression: Boolean expected\n", yylloc.first_line);
-
-    if(DEBUG)
-		fprintf(logsFile_p, "\t_if type expr type: %d\n", (yyvsp[-3].symbolPointerType)->type);
-
-    // print error if types don't match, but ignore if either type is undetermined
-    if(
-        (yyvsp[-2].symbolPointerType)->type != (yyvsp[-1].symbolPointerType)->type &&
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) 
-    ) {
-        fprintf(stderr, "Line %d --- Non-matching types used in if statements clauses\n", yylloc.first_line);
-    }
-
-    int type = _UNDETERMINED; // if not bool and int types, just pass up undetermined
-    if((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED && (yyvsp[-1].symbolPointerType)->type != _UNDETERMINED)
-        type = (yyvsp[-1].symbolPointerType)->type;
-    else if((yyvsp[-1].symbolPointerType)->type == _UNDETERMINED && (yyvsp[-2].symbolPointerType)->type != _UNDETERMINED)
-        type = (yyvsp[-2].symbolPointerType)->type;
-    else if((yyvsp[-2].symbolPointerType)->type == (yyvsp[-1].symbolPointerType)->type)
-        type = (yyvsp[-2].symbolPointerType)->type;
-
-    // if true first, else second
-    // int val = $3->val == 1 ? $4->val : $5->val;
-
-    (yyval.symbolPointerType) = createSymbol("_IF_EXPR_EXPR_EXPR", type, _BOOL, -1);  
+    char *condFalse = (char *) malloc(sizeof(STR_SIZE));
+    char *condTrue = (char *) malloc(sizeof(STR_SIZE));
+    snprintf( condFalse, STR_SIZE, "cond%dFalse", pushGLS() );
+    snprintf( condTrue, STR_SIZE, "cond%dTrue", peekGLS() );
+    printf("je %s\n\n", condFalse);
+    printf("# %s\n", condTrue);
 }
-#line 1914 "minlisp.tab.c"
+#line 1909 "minlisp.tab.c"
     break;
 
   case 20:
-#line 348 "minlisp.y"
+#line 342 "minlisp.y"
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr expr {} expr ')\n", nodeCounter++); 
+
+    char* condEnd = (char *) malloc(sizeof(STR_SIZE));
+    char* condFalse = (char *) malloc(sizeof(STR_SIZE));
+    snprintf( condEnd, STR_SIZE, "cond%dEnd", peekGLS() );
+    snprintf( condFalse, STR_SIZE, "cond%dFalse", peekGLS() );
+    printf("\n");
+    // store result of computation in stack stored by the labelStack
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc((yyvsp[0].symbolPointerType)), peekGLS());
+    printf("jmp %s\n", condEnd);
+    printf("%s:\n", condFalse);
+
+}
+#line 1929 "minlisp.tab.c"
+    break;
+
+  case 21:
+#line 358 "minlisp.y"
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' 'if' expr expr expr ')\n", nodeCounter++); 
+
+    if((yyvsp[-5].symbolPointerType)->type != _BOOL)
+        fprintf(stderr, "Line %d --- Incorrect type for first expression in if expression: Boolean expected\n", yylloc.first_line);
+
+    // print error if types don't match
+    if( (yyvsp[-3].symbolPointerType)->type != (yyvsp[-1].symbolPointerType)->type)
+        fprintf(stderr, "Line %d --- Non-matching types used in if statements clauses\n", yylloc.first_line);
+
+    int stackLocationOfResult = popGLS();
+    char* condEnd = (char *) malloc(sizeof(STR_SIZE));
+    snprintf( condEnd, STR_SIZE, "cond%dEnd", stackLocationOfResult);
+    printf("\n");
+    printf("movq %s, %d(%%rsp)\n", symbolMemLoc((yyvsp[-1].symbolPointerType)), stackLocationOfResult);
+    printf("%s:\n", condEnd);
+    // store result of whichever's branch execution result into a temp register
+    int regIndex = getFreeRegIndex();
+    printf("movq %d(%%rsp), %s\n", stackLocationOfResult, genpurpRegName[regIndex]);
+
+    (yyval.symbolPointerType) = createSymbol("_IF_EXPR_EXPR_EXPR", (yyvsp[-3].symbolPointerType)->type, _REGISTER, regIndex);  
+}
+#line 1957 "minlisp.tab.c"
+    break;
+
+  case 22:
+#line 381 "minlisp.y"
                                 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'while' expr {} expr ')\n", nodeCounter++); 
@@ -1922,22 +1965,22 @@ yyreduce:
     if((yyvsp[0].symbolPointerType)->type != _UNDETERMINED && (yyvsp[0].symbolPointerType)->type != _BOOL) 
         fprintf(stderr, "Line %d --- Incorrect type for first expression in while expression: Boolean expected\n", yylloc.first_line);
 }
-#line 1926 "minlisp.tab.c"
+#line 1969 "minlisp.tab.c"
     break;
 
-  case 21:
-#line 354 "minlisp.y"
+  case 23:
+#line 387 "minlisp.y"
            {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'while' expr --> expr ')\n", nodeCounter++); 
     
     (yyval.symbolPointerType) = createSymbol("_WHILE_EXPR_EXPR", (yyvsp[-1].symbolPointerType)->type, _BOOL, -1);
 }
-#line 1937 "minlisp.tab.c"
+#line 1980 "minlisp.tab.c"
     break;
 
-  case 22:
-#line 361 "minlisp.y"
+  case 24:
+#line 394 "minlisp.y"
 {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' ID (%s) actual_list ')'\n", nodeCounter++, (yyvsp[-2].nameVal));  
@@ -1992,16 +2035,17 @@ yyreduce:
         sym_p = createSymbol((yyvsp[-2].nameVal), _INT, _REGISTER, regIndex);
     }
 
+    genSaveFuncParams();
     genFunctionCall((yyvsp[-2].nameVal));
     printf("movq %%rax, %s\n", genpurpRegName[regIndex]);
 
     (yyval.symbolPointerType) = sym_p;   
 }
-#line 2001 "minlisp.tab.c"
+#line 2045 "minlisp.tab.c"
     break;
 
-  case 23:
-#line 421 "minlisp.y"
+  case 25:
+#line 455 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'write' expr ')'\n", nodeCounter++);
@@ -2023,11 +2067,11 @@ yyreduce:
     
     (yyval.symbolPointerType) = exprSym_p;
 }
-#line 2027 "minlisp.tab.c"
+#line 2071 "minlisp.tab.c"
     break;
 
-  case 24:
-#line 443 "minlisp.y"
+  case 26:
+#line 477 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'writeln' expr ')'\n", nodeCounter++);    
@@ -2049,11 +2093,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = exprSym_p;
 }
-#line 2053 "minlisp.tab.c"
+#line 2097 "minlisp.tab.c"
     break;
 
-  case 25:
-#line 465 "minlisp.y"
+  case 27:
+#line 499 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'read' ')'\n", nodeCounter++); 
@@ -2065,11 +2109,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = createSymbol("_READ", _INT, _OFFSET, regIndex); 
 }
-#line 2069 "minlisp.tab.c"
+#line 2113 "minlisp.tab.c"
     break;
 
-  case 26:
-#line 476 "minlisp.y"
+  case 28:
+#line 510 "minlisp.y"
                          {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'let' {} '(' assign_list ')' expr ')'\n", nodeCounter++); 
@@ -2078,22 +2122,22 @@ yyreduce:
     createScope(NULL);
 
 }
-#line 2082 "minlisp.tab.c"
+#line 2126 "minlisp.tab.c"
     break;
 
-  case 27:
-#line 483 "minlisp.y"
+  case 29:
+#line 517 "minlisp.y"
                       {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'let' '(' assign_list ')' {} expr ')'\n", nodeCounter++);    
         printScopeSymbols(currScope_p);
     }
 }
-#line 2093 "minlisp.tab.c"
+#line 2137 "minlisp.tab.c"
     break;
 
-  case 28:
-#line 488 "minlisp.y"
+  case 30:
+#line 522 "minlisp.y"
            {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'let'  '(' assign_list ')' --> expr ')'\n", nodeCounter++);    
@@ -2112,11 +2156,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2116 "minlisp.tab.c"
+#line 2160 "minlisp.tab.c"
     break;
 
-  case 29:
-#line 507 "minlisp.y"
+  case 31:
+#line 541 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'set' %s expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));  
@@ -2142,17 +2186,17 @@ yyreduce:
         sym_p = createSymbol((yyvsp[-2].nameVal), _INT, _REGISTER, getFreeRegIndex()); 
     }
 
-    printf("movq %s, %s", symbolMemLoc((yyvsp[-1].symbolPointerType)), symbolMemLoc(sym_p));
+    printf("movq %s, %s\n", symbolMemLoc((yyvsp[-1].symbolPointerType)), symbolMemLoc(sym_p));
     if((yyvsp[-1].symbolPointerType)->val_origin == _REGISTER)
         freeRegister((yyvsp[-1].symbolPointerType)->val_index);
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2152 "minlisp.tab.c"
+#line 2196 "minlisp.tab.c"
     break;
 
-  case 30:
-#line 538 "minlisp.y"
+  case 32:
+#line 572 "minlisp.y"
                                                   {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' 'set' %s '[' expr ']' expr ')'\n", nodeCounter++, (yyvsp[-5].nameVal));    
@@ -2190,11 +2234,11 @@ yyreduce:
 
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2194 "minlisp.tab.c"
+#line 2238 "minlisp.tab.c"
     break;
 
-  case 31:
-#line 576 "minlisp.y"
+  case 33:
+#line 610 "minlisp.y"
 {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' '+' expr expr ')'\n", nodeCounter++);  
@@ -2231,11 +2275,11 @@ yyreduce:
     // right's register
     (yyval.symbolPointerType) = createSymbol("_PLUS_EXP_EXP", _INT, _REGISTER, rSym_p->val_index);
 }
-#line 2235 "minlisp.tab.c"
+#line 2279 "minlisp.tab.c"
     break;
 
-  case 32:
-#line 613 "minlisp.y"
+  case 34:
+#line 647 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '-' expr expr ')'\n", nodeCounter++);
@@ -2266,11 +2310,11 @@ yyreduce:
     // left's register
     (yyval.symbolPointerType) = createSymbol("_MIN_EXP_EXP", _INT, _REGISTER, lSym_p->val_index);
 }
-#line 2270 "minlisp.tab.c"
+#line 2314 "minlisp.tab.c"
     break;
 
-  case 33:
-#line 644 "minlisp.y"
+  case 35:
+#line 678 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '*' expr expr ')'\n", nodeCounter++);    
@@ -2299,11 +2343,11 @@ yyreduce:
     // right's register
     (yyval.symbolPointerType) = createSymbol("_MULT_EXP_EXP", _INT, _REGISTER, rSym_p->val_index);
 }
-#line 2303 "minlisp.tab.c"
+#line 2347 "minlisp.tab.c"
     break;
 
-  case 34:
-#line 673 "minlisp.y"
+  case 36:
+#line 707 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '/' expr expr ')'\n", nodeCounter++);    
@@ -2339,125 +2383,110 @@ yyreduce:
     // left's register
     (yyval.symbolPointerType) = createSymbol("_DIVIDE_EXP_EXP", _INT, _REGISTER, lSym_p->val_index);
 }
-#line 2343 "minlisp.tab.c"
-    break;
-
-  case 35:
-#line 708 "minlisp.y"
-                                      {
-    if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '<' expr expr ')'\n", nodeCounter++);    
-
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator <: Integers expected\n", yylloc.first_line);
-
-    (yyval.symbolPointerType) = createSymbol("_LT_EXP_EXP", _BOOL, _REGISTER, -1);
-}
-#line 2360 "minlisp.tab.c"
-    break;
-
-  case 36:
-#line 719 "minlisp.y"
-                                      {
-    if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '>' expr expr ')'\n", nodeCounter++);    
-
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator >: Integers expected\n", yylloc.first_line);
-
-    (yyval.symbolPointerType) = createSymbol("_GT_EXP_EXP", _BOOL, _REGISTER, -1);
-}
-#line 2377 "minlisp.tab.c"
+#line 2387 "minlisp.tab.c"
     break;
 
   case 37:
-#line 731 "minlisp.y"
-                                      {
+#line 743 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '<=' expr expr ')'\n", nodeCounter++);    
+		fprintf(logsFile_p, "(%d) expr - '(' '<' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator <=: Integers expected\n", yylloc.first_line);
+    if((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator <: Integers expected\n", yylloc.first_line);
 
-    (yyval.symbolPointerType) = createSymbol("_LTE_EXP_EXP", _BOOL, _REGISTER, -1);
+    int regIndex = genInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "setl");
+
+    (yyval.symbolPointerType) = createSymbol("_LT_EXP_EXP", _BOOL, _REGISTER, regIndex);
 }
-#line 2394 "minlisp.tab.c"
+#line 2403 "minlisp.tab.c"
     break;
 
   case 38:
-#line 743 "minlisp.y"
-                                      {
+#line 755 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '>=' expr expr ')'\n", nodeCounter++);    
+		fprintf(logsFile_p, "(%d) expr - '(' '>' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator >=: Integers expected\n", yylloc.first_line);
+    if((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator >: Integers expected\n", yylloc.first_line);
 
-    (yyval.symbolPointerType) = createSymbol("_GTE_EXP_EXP", _BOOL, _REGISTER, -1);
+    int regIndex = genInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "setg");
+
+    (yyval.symbolPointerType) = createSymbol("_GT_EXP_EXP", _BOOL, _REGISTER, regIndex);
 }
-#line 2411 "minlisp.tab.c"
+#line 2419 "minlisp.tab.c"
     break;
 
   case 39:
-#line 755 "minlisp.y"
-                                      {
+#line 767 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '=' expr expr ')'\n", nodeCounter++);      
+		fprintf(logsFile_p, "(%d) expr - '(' '<=' expr expr ')'\n", nodeCounter++);    
 
-    Symbol* exp_1 = (yyvsp[-2].symbolPointerType);
-    Symbol* exp_2 = (yyvsp[-1].symbolPointerType);
+    if((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator <=: Integers expected\n", yylloc.first_line);
 
-    Symbol* sym_p = malloc(sizeof(Symbol));
+    int regIndex = genInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "setle");
 
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator =: Integers expected\n", yylloc.first_line);
-
-    // no matter whether UNDEFINED | INT | BOOl combination, return comparison of two exprs
-    sym_p = createSymbol("_EQ_EXP_EXP", _BOOL, _REGISTER, -1);
-
-    if(DEBUG)
-		fprintf(logsFile_p, "\tlexeme: %s, type: %d\n", sym_p->lexeme, sym_p->type);
-
-    (yyval.symbolPointerType) = sym_p;
+    (yyval.symbolPointerType) = createSymbol("_LTE_EXP_EXP", _BOOL, _REGISTER, regIndex);
 }
-#line 2439 "minlisp.tab.c"
+#line 2435 "minlisp.tab.c"
     break;
 
   case 40:
-#line 778 "minlisp.y"
-                                      {
+#line 779 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '<>' expr ')'\n", nodeCounter++); 
+		fprintf(logsFile_p, "(%d) expr - '(' '>=' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator <>: Integers expected\n", yylloc.first_line);
+    if((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator >=: Integers expected\n", yylloc.first_line);
 
-    (yyval.symbolPointerType) = createSymbol("_NEQ_EXP_EXP", _BOOL, _REGISTER, -1);   
+    int regIndex = genInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "setge");
+
+    (yyval.symbolPointerType) = createSymbol("_GTE_EXP_EXP", _BOOL, _REGISTER, regIndex);
 }
-#line 2456 "minlisp.tab.c"
+#line 2451 "minlisp.tab.c"
     break;
 
   case 41:
-#line 790 "minlisp.y"
-                                 {
+#line 791 "minlisp.y"
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' '=' expr expr ')'\n", nodeCounter++); 
+
+    Symbol* sym_p = malloc(sizeof(Symbol));
+
+    if((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator =: Integers expected\n", yylloc.first_line);
+
+    int regIndex = genInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "sete");
+
+    (yyval.symbolPointerType) = createSymbol("_EQ_EXP_EXP", _BOOL, _REGISTER, regIndex);
+}
+#line 2469 "minlisp.tab.c"
+    break;
+
+  case 42:
+#line 805 "minlisp.y"
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' '<>' expr ')'\n", nodeCounter++); 
+
+    if((yyvsp[-2].symbolPointerType)->type != _INT || (yyvsp[-1].symbolPointerType)->type != _INT) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator <>: Integers expected\n", yylloc.first_line);
+
+    int regIndex = genInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "setne");
+
+    (yyval.symbolPointerType) = createSymbol("_NEQ_EXP_EXP", _BOOL, _REGISTER, regIndex);   
+}
+#line 2485 "minlisp.tab.c"
+    break;
+
+  case 43:
+#line 817 "minlisp.y"
+{
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr - '(' '-' expr ')'\n", nodeCounter++);  
 
@@ -2474,107 +2503,107 @@ yyreduce:
     printf("negq %s\n", symbolMemLoc(sym_p));
     (yyval.symbolPointerType) = createSymbol("_NEGAT_EXPR", _INT, _REGISTER, sym_p->val_index);
 }
-#line 2478 "minlisp.tab.c"
-    break;
-
-  case 42:
-#line 807 "minlisp.y"
-                                       {
-    if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' 'and' expr expr ')'\n", nodeCounter++);
-
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator 'and': Booleans expected\n", yylloc.first_line);
-
-    (yyval.symbolPointerType) = createSymbol("_AND", _BOOL, _REGISTER, -1);
-}
-#line 2495 "minlisp.tab.c"
-    break;
-
-  case 43:
-#line 819 "minlisp.y"
-                                      {
-    if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '&' expr expr ')'\n", nodeCounter++);    
-
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator '&': Booleans expected\n", yylloc.first_line);
-
-    (yyval.symbolPointerType) = createSymbol("_AND", _BOOL, _REGISTER, -1);
-}
-#line 2512 "minlisp.tab.c"
+#line 2507 "minlisp.tab.c"
     break;
 
   case 44:
-#line 831 "minlisp.y"
-                                      {
+#line 835 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' 'or' expr expr ')'\n", nodeCounter++); 
+		fprintf(logsFile_p, "(%d) expr - '(' 'and' expr expr ')'\n", nodeCounter++);
 
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator 'or': Booleans expected\n", yylloc.first_line);
+    if((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator 'and': Booleans expected\n", yylloc.first_line);
 
-    (yyval.symbolPointerType) = createSymbol("_OR", _BOOL, _REGISTER, -1);  
+    int regIndex = genLogiInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "and");
+
+    (yyval.symbolPointerType) = createSymbol("_AND", _BOOL, _REGISTER, regIndex);
 }
-#line 2529 "minlisp.tab.c"
+#line 2523 "minlisp.tab.c"
     break;
 
   case 45:
-#line 843 "minlisp.y"
-                                      {
+#line 847 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '|' expr expr ')'\n", nodeCounter++);    
+		fprintf(logsFile_p, "(%d) expr - '(' '&' expr expr ')'\n", nodeCounter++);    
 
-    if(
-        !((yyvsp[-2].symbolPointerType)->type == _UNDETERMINED || (yyvsp[-1].symbolPointerType)->type == _UNDETERMINED) && 
-        ((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
-    ) 
-        fprintf(stderr, "Line %d --- Incorrect type for operator '|': Booleans expected\n", yylloc.first_line);
+    if((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator '&': Booleans expected\n", yylloc.first_line);
 
-    (yyval.symbolPointerType) = createSymbol("_OR", _BOOL, _REGISTER, -1); 
+    int regIndex = genLogiInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "and");
+
+    (yyval.symbolPointerType) = createSymbol("_AND", _BOOL, _REGISTER, -1);
 }
-#line 2546 "minlisp.tab.c"
+#line 2539 "minlisp.tab.c"
     break;
 
   case 46:
-#line 855 "minlisp.y"
-                                  {
+#line 859 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' 'not' expr ')'\n", nodeCounter++);    
+		fprintf(logsFile_p, "(%d) expr - '(' 'or' expr expr ')'\n", nodeCounter++); 
 
-    if((yyvsp[-1].symbolPointerType)->type != _UNDETERMINED && (yyvsp[-1].symbolPointerType)->type != _BOOL)
-        fprintf(stderr, "Line %d --- Incorrect type for operator 'not': Boolean expected\n", yylloc.first_line);
+    if((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator 'or': Booleans expected\n", yylloc.first_line);
 
-    (yyval.symbolPointerType) = createSymbol("_NEGATION", _BOOL, _REGISTER, -1); 
+    int regIndex = genLogiInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "or");
+
+    (yyval.symbolPointerType) = createSymbol("_OR", _BOOL, _REGISTER, regIndex);  
 }
-#line 2560 "minlisp.tab.c"
+#line 2555 "minlisp.tab.c"
     break;
 
   case 47:
-#line 864 "minlisp.y"
-                                 {
+#line 871 "minlisp.y"
+{
     if(DEBUG)
-		fprintf(logsFile_p, "(%d) expr - '(' '!' expr  ')'\n", nodeCounter++);
+		fprintf(logsFile_p, "(%d) expr - '(' '|' expr expr ')'\n", nodeCounter++);    
 
-    if((yyvsp[-1].symbolPointerType)->type != _UNDETERMINED  && (yyvsp[-1].symbolPointerType)->type != _BOOL)
-        fprintf(stderr, "Line %d --- Incorrect type for operator '!': Boolean expected\n", yylloc.first_line);
+    if((yyvsp[-2].symbolPointerType)->type != _BOOL || (yyvsp[-1].symbolPointerType)->type != _BOOL) 
+        fprintf(stderr, "Line %d --- Incorrect type for operator '|': Booleans expected\n", yylloc.first_line);
 
-    (yyval.symbolPointerType) = createSymbol("_NEGATION", _BOOL, _REGISTER, -1); 
+    int regIndex = genLogiInequalityExpr((yyvsp[-2].symbolPointerType), (yyvsp[-1].symbolPointerType), (char*) "or");
+
+    (yyval.symbolPointerType) = createSymbol("_OR", _BOOL, _REGISTER, regIndex); 
 }
-#line 2574 "minlisp.tab.c"
+#line 2571 "minlisp.tab.c"
     break;
 
   case 48:
-#line 873 "minlisp.y"
+#line 883 "minlisp.y"
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' 'not' expr ')'\n", nodeCounter++);    
+
+    if((yyvsp[-1].symbolPointerType)->type != _BOOL)
+        fprintf(stderr, "Line %d --- Incorrect type for operator 'not': Boolean expected\n", yylloc.first_line);
+    
+    int regIndex = genLogiInequalityExpr((yyvsp[-1].symbolPointerType), NULL, (char*) "not");
+
+    (yyval.symbolPointerType) = createSymbol("_NEGATION", _BOOL, _REGISTER, regIndex); 
+}
+#line 2587 "minlisp.tab.c"
+    break;
+
+  case 49:
+#line 895 "minlisp.y"
+{
+    if(DEBUG)
+		fprintf(logsFile_p, "(%d) expr - '(' '!' expr  ')'\n", nodeCounter++);
+
+    if((yyvsp[-1].symbolPointerType)->type != _BOOL)
+        fprintf(stderr, "Line %d --- Incorrect type for operator '!': Boolean expected\n", yylloc.first_line);
+    
+    int regIndex = genLogiInequalityExpr((yyvsp[-1].symbolPointerType), NULL, (char*) "not");
+
+    (yyval.symbolPointerType) = createSymbol("_NEGATION", _BOOL, _REGISTER, regIndex); 
+}
+#line 2603 "minlisp.tab.c"
+    break;
+
+  case 50:
+#line 906 "minlisp.y"
                                        {
     if(DEBUG) {
 		fprintf(logsFile_p, "(%d) expr - '(' 'seq' expr_list ')'\n", nodeCounter++);    
@@ -2589,11 +2618,11 @@ yyreduce:
     
     (yyval.symbolPointerType) = sym_p;
 }
-#line 2593 "minlisp.tab.c"
+#line 2622 "minlisp.tab.c"
     break;
 
-  case 49:
-#line 889 "minlisp.y"
+  case 51:
+#line 922 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) actual_list - actual_list expr\n", nodeCounter++); 
@@ -2612,11 +2641,11 @@ yyreduce:
         
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2616 "minlisp.tab.c"
+#line 2645 "minlisp.tab.c"
     break;
 
-  case 50:
-#line 908 "minlisp.y"
+  case 52:
+#line 941 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) actual_list -> ε\n", nodeCounter++);
@@ -2624,11 +2653,11 @@ yyreduce:
     // left-most node, create a new parameterListScope obj
     (yyval.paramsListType) = _newPLScope();   
 }
-#line 2628 "minlisp.tab.c"
+#line 2657 "minlisp.tab.c"
     break;
 
-  case 51:
-#line 917 "minlisp.y"
+  case 53:
+#line 950 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list - assign_list '(' ID (%s) expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));
@@ -2658,11 +2687,11 @@ yyreduce:
 
     (yyval.paramsListType) = (yyvsp[-4].paramsListType);  
 }
-#line 2662 "minlisp.tab.c"
+#line 2691 "minlisp.tab.c"
     break;
 
-  case 52:
-#line 947 "minlisp.y"
+  case 54:
+#line 980 "minlisp.y"
 {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) assign_list -  '(' %s expr ')'\n", nodeCounter++, (yyvsp[-2].nameVal));
@@ -2690,11 +2719,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2694 "minlisp.tab.c"
+#line 2723 "minlisp.tab.c"
     break;
 
-  case 53:
-#line 975 "minlisp.y"
+  case 55:
+#line 1008 "minlisp.y"
                                {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr_list - expr_list expr\n", nodeCounter++);
@@ -2704,11 +2733,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;
 }
-#line 2708 "minlisp.tab.c"
+#line 2737 "minlisp.tab.c"
     break;
 
-  case 54:
-#line 984 "minlisp.y"
+  case 56:
+#line 1017 "minlisp.y"
                      {
     if(DEBUG)
 		fprintf(logsFile_p, "(%d) expr_list - expr\n", nodeCounter++);
@@ -2721,11 +2750,11 @@ yyreduce:
     
     (yyval.paramsListType) = plScope_p;  
 }
-#line 2725 "minlisp.tab.c"
+#line 2754 "minlisp.tab.c"
     break;
 
 
-#line 2729 "minlisp.tab.c"
+#line 2758 "minlisp.tab.c"
 
       default: break;
     }
@@ -2963,7 +2992,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 997 "minlisp.y"
+#line 1030 "minlisp.y"
 
 
 int yyerror(char* s) {

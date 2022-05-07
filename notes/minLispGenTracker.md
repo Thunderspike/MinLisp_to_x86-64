@@ -12,10 +12,10 @@ id_list		:=	id_list id          [x] _int
 		    |	id	                [x] _int
 expr		:=	num                 [x] 
             |	id                  [x]
-            |	id [ expr ]         [-] // todo
-            |	true                [-] // potentially to be given more thought
-            |	false               [-] // potentially to be given more thought
-            |	( if expr expr expr )   []
+            |	id [ expr ]         [] // todo
+            |	true                [x] // potentially to be given more thought
+            |	false               [x] // potentially to be given more thought
+            |	( if expr expr expr )   [x]
             |	( while expr expr ) []
             |	( id actual_list )  [x] // should be good
             |	( write expr )      [x]
@@ -28,11 +28,11 @@ expr		:=	num                 [x]
             |	( - expr expr)      [x]
             |	( * expr expr )     [x]
             |	( / expr expr)      [x]
-            |	( < expr expr )     |	( > expr expr )  []
-            |	( <= expr expr)     |	( >= expr expr)  []
-            |	( = expr expr )     []
-            |	( <> expr expr)     []
-            |	( - expr )          []
+            |	( < expr expr )     |	( > expr expr )  [x]
+            |	( <= expr expr)     |	( >= expr expr)  [x]
+            |	( = expr expr )     [x]
+            |	( <> expr expr)     [x]
+            |	( - expr )          [x]
             |	( and  expr expr)  	|	( &  expr expr)  []
             |	( or  expr expr )	|	( |  expr expr ) []
             |	( not expr ) 		|	( ! expr )       []

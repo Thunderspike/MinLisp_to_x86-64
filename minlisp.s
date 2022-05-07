@@ -1,127 +1,94 @@
 .text
 .globl minlisp_main
 
+# expects %rdi with value 1 or 0, and returns not
+.type get_not, @function
+get_not:
 
-.type add, @function
-add:
+subq $160, %rsp
+movq %rdi,  64(%rsp)
+movq %rsi,  72(%rsp)
+movq %rdx,  80(%rsp)
+movq %rcx,  88(%rsp)
+movq %r8,   96(%rsp)
+movq %r9,   104(%rsp)
+movq %r10,  112(%rsp)
+movq %r11,  120(%rsp)
+movq %r12,  128(%rsp)
+movq %r13,  136(%rsp)
+movq %r14,  144(%rsp)
+movq %r15,  152(%rsp)
+cmpq $0, %rdi
+je get_result_true
+# get_result_false:
+movq $0, %rbx
+jmp get_return_not
+get_result_true:
+movq $1, %rbx
+get_return_not:
+movq %rbx, %rax
+movq 64(%rsp),  %rdi 
+movq 72(%rsp),  %rsi
+movq 80(%rsp),  %rdx
+movq 88(%rsp),  %rcx
+movq 96(%rsp),  %r8
+movq 104(%rsp), %r9
+movq 112(%rsp), %r10
+movq 120(%rsp), %r11
+movq 128(%rsp), %r12
+movq 136(%rsp), %r13
+movq 144(%rsp), %r14
+movq 152(%rsp), %r15
+addq $160, %rsp
+ret
 
-subq $128, %rsp
-movq %rdi, 80(%rsp)
-movq %rsi, 88(%rsp)
-movq %rdx, 96(%rsp)
-movq %rcx, 104(%rsp)
-movq %r8, 112(%rsp)
-movq %r9, 120(%rsp)
+# ---------------------------------------
 
-movq $22, %rbx
-movq $20, %rbp
-# addition
-addq %rbx, %rbp
-movq $5, %rbx
-movq %rsi, %r10
-negq %r10
-# multiplication
-imulq %rbx, %r10
-# subtraction
-subq %r10, %rbp
-# division
+.type max, @function
+max:
 
-# start division
-pushq %rdx
-pushq %rcx
-movq $0, %rdx
-movq %rbp, %rax
-movq %rsi, %rcx
-divq %rcx
-movq %rax, %rbp
-popq %rcx
-popq %rdx
-# end division
+subq $160, %rsp
+movq %rdi,  64(%rsp)
+movq %rsi,  72(%rsp)
+movq %rdx,  80(%rsp)
+movq %rcx,  88(%rsp)
+movq %r8,   96(%rsp)
+movq %r9,   104(%rsp)
+movq %r10,  112(%rsp)
+movq %r11,  120(%rsp)
+movq %r12,  128(%rsp)
+movq %r13,  136(%rsp)
+movq %r14,  144(%rsp)
+movq %r15,  152(%rsp)
+cmpq %rsi, %rdi
+setg %al
+movzbq %al, %rbx
+cmpq $0, %rbx
+je cond4False
 
-movq %rbp, 4(%rsp)
-# addition
-movq %rsi, %rbx
-addq %rdi, %rbx
-# subtraction
-movq 4(%rsp), %rbp
-subq %rbx, %rbp
-movq %rbp, 8(%rsp)
-movq 8(%rsp), %rbx
+# cond4True
 
-# start write
-pushq %rdi
-pushq %rsi
-movq %rbx, %rsi
-movq S1(%rip), %rdi
-movl $0, %eax
-call printf
-popq %rsi
-popq %rdi
-# end write
+movq %rdi, 4(%rsp)
+jmp cond4End
+cond4False:
 
-movq $22, %rbp
-movq $20, %r10
-# addition
-addq %rbp, %r10
-movq $5, %rbp
-movq %rsi, %r11
-negq %r11
-# multiplication
-imulq %rbp, %r11
-# subtraction
-subq %r11, %r10
-# division
-
-# start division
-pushq %rdx
-pushq %rcx
-movq $0, %rdx
-movq %r10, %rax
-movq %rsi, %rcx
-divq %rcx
-movq %rax, %r10
-popq %rcx
-popq %rdx
-# end division
-
-
-# start write
-pushq %rdi
-pushq %rsi
-movq %r10, %rsi
-movq S1(%rip), %rdi
-movl $0, %eax
-call printf
-popq %rsi
-popq %rdi
-# end write
-
-# subtraction
-movq %rdi, %rbp
-subq %rsi, %rbp
-
-# start write
-pushq %rdi
-pushq %rsi
-movq %rbp, %rsi
-movq S1(%rip), %rdi
-movl $0, %eax
-call printf
-popq %rsi
-popq %rdi
-# end write
-
-# addition
-movq %rsi, %r11
-addq %rdi, %r11
-movq %r11, %rax
-movq 80(%rsp), %rdi
-movq 88(%rsp), %rsi
-movq 96(%rsp), %rdx
-movq 104(%rsp), %rcx
-movq 112(%rsp), %r8
-movq 120(%rsp), %r9
-addq $128, %rsp
+movq %rsi, 4(%rsp)
+cond4End:
+movq 4(%rsp), %rbx
+movq %rbx, %rax
+movq 64(%rsp),  %rdi 
+movq 72(%rsp),  %rsi
+movq 80(%rsp),  %rdx
+movq 88(%rsp),  %rcx
+movq 96(%rsp),  %r8
+movq 104(%rsp), %r9
+movq 112(%rsp), %r10
+movq 120(%rsp), %r11
+movq 128(%rsp), %r12
+movq 136(%rsp), %r13
+movq 144(%rsp), %r14
+movq 152(%rsp), %r15
+addq $160, %rsp
 ret
 
 # ---------------------------------------
@@ -129,32 +96,23 @@ ret
 .type minlisp_main, @function
 minlisp_main:
 
-subq $128, %rsp
-movq %rdi, 80(%rsp)
-movq %rsi, 88(%rsp)
-movq %rdx, 96(%rsp)
-movq %rcx, 104(%rsp)
-movq %r8, 112(%rsp)
-movq %r9, 120(%rsp)
-
-movq $5, %rbx
-
-# start write
-pushq %rdi
-pushq %rsi
+subq $160, %rsp
+movq %rdi,  64(%rsp)
+movq %rsi,  72(%rsp)
+movq %rdx,  80(%rsp)
+movq %rcx,  88(%rsp)
+movq %r8,   96(%rsp)
+movq %r9,   104(%rsp)
+movq %r10,  112(%rsp)
+movq %r11,  120(%rsp)
+movq %r12,  128(%rsp)
+movq %r13,  136(%rsp)
+movq %r14,  144(%rsp)
+movq %r15,  152(%rsp)
+movq $10, %rbx
+movq %rbx, %rdi
+movq $20, %rbx
 movq %rbx, %rsi
-movq S1(%rip), %rdi
-movl $0, %eax
-call printf
-popq %rsi
-popq %rdi
-# end write
-
-movq %rbx, 4(%rsp)
-movq $2, %rbx
-movq %rbx, 8(%rsp)
-movq 4(%rsp), %rdi
-movq 8(%rsp), %rsi
 pushq %rbx
 pushq %rbp
 pushq %r10
@@ -163,7 +121,7 @@ pushq %r12
 pushq %r13
 pushq %r14
 pushq %r15
-call add
+call max
 popq %r15
 popq %r14
 popq %r13
@@ -173,26 +131,76 @@ popq %r10
 popq %rbp
 popq %rbx
 movq %rax, %rbx
+movq $42, %rbp
+movq %rbp, %rdi
+movq $9, %rbp
+movq %rbp, %rsi
+pushq %rbx
+pushq %rbp
+pushq %r10
+pushq %r11
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+call max
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %r11
+popq %r10
+popq %rbp
+popq %rbx
+movq %rax, %rbp
+# addition
+addq %rbx, %rbp
 
-# start write
-pushq %rdi
-pushq %rsi
-movq %rbx, %rsi
+# start print
+movq %rdi,  64(%rsp)
+movq %rsi,  72(%rsp)
+movq %rdx,  80(%rsp)
+movq %rcx,  88(%rsp)
+movq %r8,   96(%rsp)
+movq %r9,   104(%rsp)
+movq %r10,  112(%rsp)
+movq %r11,  120(%rsp)
+movq %r12,  128(%rsp)
+movq %r13,  136(%rsp)
+movq %r14,  144(%rsp)
+movq %r15,  152(%rsp)
+movq %rbp, %rsi # our param
 movq S1(%rip), %rdi
-movl $0, %eax
+movq $0, %rax
 call printf
-popq %rsi
-popq %rdi
-# end write
+movq 64(%rsp),  %rdi 
+movq 72(%rsp),  %rsi
+movq 80(%rsp),  %rdx
+movq 88(%rsp),  %rcx
+movq 96(%rsp),  %r8
+movq 104(%rsp), %r9
+movq 112(%rsp), %r10
+movq 120(%rsp), %r11
+movq 128(%rsp), %r12
+movq 136(%rsp), %r13
+movq 144(%rsp), %r14
+movq 152(%rsp), %r15
+# end print
 
-movq %rbx, %rax
-movq 80(%rsp), %rdi
-movq 88(%rsp), %rsi
-movq 96(%rsp), %rdx
-movq 104(%rsp), %rcx
-movq 112(%rsp), %r8
-movq 120(%rsp), %r9
-addq $128, %rsp
+movq %rbp, %rax
+movq 64(%rsp),  %rdi 
+movq 72(%rsp),  %rsi
+movq 80(%rsp),  %rdx
+movq 88(%rsp),  %rcx
+movq 96(%rsp),  %r8
+movq 104(%rsp), %r9
+movq 112(%rsp), %r10
+movq 120(%rsp), %r11
+movq 128(%rsp), %r12
+movq 136(%rsp), %r13
+movq 144(%rsp), %r14
+movq 152(%rsp), %r15
+addq $160, %rsp
 ret
 
 # ---------------------------------------

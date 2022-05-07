@@ -1,0 +1,6 @@
+(define main() 
+    (if ( < 2 3) 
+        (write 2) 
+        (write 3)  
+    )
+)

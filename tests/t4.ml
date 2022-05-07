@@ -1,13 +1,13 @@
-(def add (x, y)
+(define add (x y)
     ( seq
         ( + x y )
     )
 )
-(def main() 
+(define main() 
     ( let (
             (a (write 5))
             (b 2)
         )
-        (write add(a, b))
+        (write (add a b))
     )
 )

@@ -21,6 +21,7 @@
 
 #define GEN_PUR_AVAIL_REGS 8
 #define FUNC_PAR_AVAIL_REGS 6
+#define LABELSTACKDEPTH 10
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -145,13 +146,31 @@ void freeRegister(int index);
 void printAvailRegisters();
 
 // ------
+// Global Labels Stack for branching
+typedef struct GlobalLabelStack {
+    int labelCounter;
+    int top;
+    unsigned capacity;
+    int* array;
+} GLS;
+
+void createGLS(unsigned capacity);
+int pushGLS();
+int popGLS();
+int peekGLS();
+
+// ------
 // x86-64 code generation utilities
 char* symbolMemLoc(Symbol* sym_p);
 void genPrintFunction(char* reg);
 void genDivision(char* dividentReg, char* divisorReg);
 void genFunctionHeader(char funcName[255]);
 void genFunctionFooter();
+void genSaveFuncParams();
 void genFunctionCall(char funcName[255]);
+int genInequalityExpr(Symbol* lSym_p, Symbol* rSym_p, char* ineqOp);
+int genLogiInequalityExpr(Symbol* lSym_p, Symbol* rSym_p, char* ineqOp);
+void genNotFunc();
 
 // ------
 // Extern variable declaration
@@ -161,6 +180,7 @@ extern int nodeCounter;
 extern Scope* currScope_p;
 extern GlobalFuncs* globalFuncs_p;
 extern GlobalArrays* globalArrs_p;
+extern GLS* gls_p;
 
 extern char* genpurpRegName[GEN_PUR_AVAIL_REGS];
 extern char* funcparamRegName[FUNC_PAR_AVAIL_REGS];

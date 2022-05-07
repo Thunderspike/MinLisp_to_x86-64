@@ -5,6 +5,7 @@ int nodeCounter = 0;
 Scope* currScope_p = NULL;
 GlobalFuncs* globalFuncs_p = NULL;
 GlobalArrays* globalArrs_p = NULL;
+GLS* gls_p = NULL; 
 
 char* genpurpRegName[GEN_PUR_AVAIL_REGS] = {
     "\%rbx", "\%rbp", "\%r10", "\%r11", "\%r12", "\%r13", "\%r14", "\%r15"
@@ -24,6 +25,7 @@ void initGlobalState() {
 
         createGlobalFuncs();
         createGlobalArrays();
+        createGLS(LABELSTACKDEPTH);
     }
 }
 
@@ -467,6 +469,44 @@ void printAvailRegisters() {
     }
     fprintf(logsFile_p, "]\n");
     fprintf(logsFile_p, "\n\n---\t\t---\n\n");
+}
+
+// ------
+
+void createGLS(unsigned capacity) {
+    gls_p = (GLS*) malloc(sizeof(GLS));
+    gls_p->capacity = capacity;
+    gls_p->top = -1;
+    gls_p->array = (int*)malloc(gls_p->capacity * sizeof(int));
+}
+
+int _stackFull() { return gls_p->top == gls_p->capacity - 1; }
+int _isEmpty() { return gls_p->top == -1; }
+
+int pushGLS() {
+    if(_stackFull()) {
+        fprintf(stderr, "Error: Ran out of stack space for branch labels.\n");
+        exit(0);
+    }
+    gls_p->array[++gls_p->top] = getClosestEnclosingFunc()->stackOffset;
+    getClosestEnclosingFunc()->stackOffset += 4;
+    return peekGLS();
+}
+
+int popGLS() {
+    if(_isEmpty()) {
+        fprintf(stderr, "Error: An operation poppsed the label stack one too many times\n");
+        exit(0);
+    }
+    return gls_p->array[gls_p->top--];
+}
+
+int peekGLS() {
+    if(_isEmpty()) {
+        fprintf(stderr, "Error: An operation poppsed the label stack one too many times\n");
+        exit(0);
+    }
+    return gls_p->array[gls_p->top];
 }
 
 // --- debugging

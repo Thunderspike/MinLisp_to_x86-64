@@ -321,6 +321,7 @@ void generateMain() {
     // used into the scope on the programatic side (C), and when it returns
     // just like assembly pops the scope the program can also restore the 
     // list of registers used
+    genSaveFuncParams();
     genFunctionCall(funcName);
     Symbol* addFuncSym_p = createSymbol("add", _INT, _REGISTER, getFreeRegIndex());
     // grab function return and store in temporary register

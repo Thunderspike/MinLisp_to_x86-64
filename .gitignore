@@ -1,0 +1,9 @@
+*.s
+play
+a.out
+exe
+lex.yy.c 
+minlisp 
+minlisp.output 
+minlisp.tab.c 
+minlisp.tab.h
